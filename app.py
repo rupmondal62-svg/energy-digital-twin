@@ -25,15 +25,15 @@ authenticator = stauth.Authenticate(
     config['cookie']['expiry_days']
 )
 
-name, authentication_status, username = authenticator.login("🔐 Login", "main")
+name, authentication_status, username = authenticator.login()
 
 # ---------------- LOGIN CONTROL ---------------- #
-if authentication_status == False:
+if authentication_status is False:
     st.error("❌ Incorrect Username/Password")
     st.stop()
 
-elif authentication_status == None:
-    st.warning("⚠️ Please enter your credentials")
+elif authentication_status is None:
+    st.warning("⚠️ Please enter your login credentials")
     st.stop()
 
 # ---------------- AFTER LOGIN ---------------- #
@@ -78,6 +78,7 @@ with st.sidebar:
 st.markdown("# 🌍 EnerSight AI")
 st.markdown("### ⚡ Intelligence Layer for Global Energy Supply Chains")
 
+# ---------------- AUTO REFRESH ---------------- #
 st_autorefresh(interval=10000, key="datarefresh")
 
 # ---------------- YOUR ORIGINAL LOGIC (UNCHANGED) ---------------- #
