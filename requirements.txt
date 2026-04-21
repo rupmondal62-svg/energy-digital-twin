@@ -1,0 +1,7 @@
+streamlit
+pandas
+pydeck
+requests
+streamlit-autorefresh
+streamlit-authenticator
+PyYAML
