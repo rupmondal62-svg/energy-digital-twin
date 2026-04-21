@@ -3,5 +3,5 @@ pandas
 pydeck
 requests
 streamlit-autorefresh
-streamlit-authenticator
+streamlit-authenticator==0.2.2
 PyYAML
