@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import pydeck as pdk
-import math
 import random
 import requests
 import os
@@ -25,11 +24,13 @@ authenticator = stauth.Authenticate(
     config['cookie']['expiry_days']
 )
 
-name, authentication_status, username = authenticator.login(location="main")
+# ✅ SAFE LOGIN (works across versions)
+try:
+    name, authentication_status, username = authenticator.login("Login", "main")
+except:
+    name, authentication_status, username = authenticator.login(location="main")
 
 # ---------------- LOGIN CONTROL ---------------- #
-name, authentication_status, username = authenticator.login(location="main")
-
 if authentication_status is False:
     st.error("❌ Incorrect Username/Password")
     st.stop()
@@ -37,10 +38,6 @@ if authentication_status is False:
 elif authentication_status is None:
     st.warning("⚠️ Please enter your login credentials")
     st.stop()
-
-elif authentication_status:
-    authenticator.logout("Logout", "sidebar")
-    st.sidebar.success(f"👤 {name}")
 
 # ---------------- AFTER LOGIN ---------------- #
 authenticator.logout("Logout", "sidebar")
@@ -87,22 +84,24 @@ st.markdown("### ⚡ Intelligence Layer for Global Energy Supply Chains")
 # ---------------- AUTO REFRESH ---------------- #
 st_autorefresh(interval=10000, key="datarefresh")
 
-# ---------------- YOUR ORIGINAL LOGIC (UNCHANGED) ---------------- #
+# ---------------- DATA FUNCTIONS ---------------- #
 
 def fetch_news():
     API_KEY = os.getenv("NEWS_API_KEY")
+    if not API_KEY:
+        return []
     url = f"https://newsapi.org/v2/everything?q=energy&apiKey={API_KEY}"
     try:
         res = requests.get(url)
         data = res.json()
-        return [{"title": a["title"], "source": a["source"]["name"]} for a in data["articles"][:5]]
+        return [{"title": a["title"], "source": a["source"]["name"]} for a in data.get("articles", [])[:5]]
     except:
         return []
 
 def generate_ships():
     base = [(26,56),(25,57),(24,60),(22,63),(20,66)]
     ships = []
-    for i,(lat,lon) in enumerate(base):
+    for lat, lon in base:
         ships.append({
             "lat": lat,
             "lon": lon,
@@ -149,13 +148,16 @@ elif page == "News Intelligence":
 
     st.markdown("## 📰 Energy News")
 
-    for article in news:
-        st.markdown(f"""
-        <div class="news-card">
-        <b>{article['title']}</b><br>
-        {article['source']}
-        </div>
-        """, unsafe_allow_html=True)
+    if not news:
+        st.info("No news available (check API key)")
+    else:
+        for article in news:
+            st.markdown(f"""
+            <div class="news-card">
+            <b>{article['title']}</b><br>
+            {article['source']}
+            </div>
+            """, unsafe_allow_html=True)
 
 elif page == "Data Table":
 
