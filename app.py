@@ -27,8 +27,11 @@ authenticator = stauth.Authenticate(
 # ✅ SAFE LOGIN (works across versions)
 try:
     name, authentication_status, username = authenticator.login("Login", "main")
-except:
-    name, authentication_status, username = authenticator.login(location="main")
+except TypeError:
+    try:
+        name, authentication_status, username = authenticator.login(location="main")
+    except:
+        name, authentication_status, username = authenticator.login()
 
 # ---------------- LOGIN CONTROL ---------------- #
 if authentication_status is False:
