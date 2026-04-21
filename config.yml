@@ -1,0 +1,10 @@
+credentials:
+  usernames:
+    rup:
+      name: Rup Mondal
+      password: '$2b$12$KIXQ...hashedpasswordhere'
+
+cookie:
+  name: energysight_cookie
+  key: some_secret_key
+  expiry_days: 30
