@@ -25,9 +25,11 @@ authenticator = stauth.Authenticate(
     config['cookie']['expiry_days']
 )
 
-name, authentication_status, username = authenticator.login("Login", "main")
+name, authentication_status, username = authenticator.login(location="main")
 
 # ---------------- LOGIN CONTROL ---------------- #
+name, authentication_status, username = authenticator.login(location="main")
+
 if authentication_status is False:
     st.error("❌ Incorrect Username/Password")
     st.stop()
@@ -35,6 +37,10 @@ if authentication_status is False:
 elif authentication_status is None:
     st.warning("⚠️ Please enter your login credentials")
     st.stop()
+
+elif authentication_status:
+    authenticator.logout("Logout", "sidebar")
+    st.sidebar.success(f"👤 {name}")
 
 # ---------------- AFTER LOGIN ---------------- #
 authenticator.logout("Logout", "sidebar")
