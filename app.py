@@ -63,19 +63,100 @@ else:
 # ---------------- UI ---------------- #
 st.markdown("""
 <style>
+
+/* -------- GLOBAL -------- */
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+
+/* -------- MAIN BACKGROUND -------- */
 .main {
-    background: linear-gradient(135deg, #0f172a, #020617);
-    color: #e2e8f0;
+    background: #f8fafc;
+    color: #0f172a;
 }
+
+/* -------- SIDEBAR -------- */
 section[data-testid="stSidebar"] {
-    background: #020617;
+    background: #ffffff !important;
+    border-right: 1px solid #e2e8f0;
 }
+
+/* Sidebar text */
+section[data-testid="stSidebar"] * {
+    color: #0f172a !important;
+}
+
+/* Sidebar title */
+section[data-testid="stSidebar"] h1, 
+section[data-testid="stSidebar"] h2 {
+    font-weight: 600;
+}
+
+/* -------- NAV RADIO -------- */
+div[role="radiogroup"] > label {
+    background: transparent;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    transition: 0.2s;
+}
+
+div[role="radiogroup"] > label:hover {
+    background: #f1f5f9;
+}
+
+div[role="radiogroup"] input:checked + div {
+    background: #e0e7ff;
+    border-radius: 10px;
+}
+
+/* -------- CARDS -------- */
+[data-testid="stMetric"] {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* -------- HEADINGS -------- */
+h1 {
+    font-size: 38px;
+    font-weight: 700;
+}
+
+h2 {
+    font-weight: 600;
+}
+
+/* -------- NEWS CARD -------- */
 .news-card {
-    padding: 14px;
-    background: rgba(255,255,255,0.07);
+    padding: 16px;
+    background: white;
+    border: 1px solid #e2e8f0;
     border-radius: 12px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
+
+/* -------- QR BOX -------- */
+.qr-box {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* -------- BUTTON -------- */
+.stButton>button {
+    border-radius: 10px;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -88,15 +169,19 @@ with st.sidebar:
         st.markdown("## 🚀 Upgrade to PRO")
 
         # QR Section
-        st.markdown("### 💳 Scan & Pay")
-        st.image("qr.png", width=250)
+        with st.sidebar:
+    st.title("⚡ EnerSight AI")
+    st.markdown("### Navigation")
+    page = st.radio("", ["Dashboard", "Live Map", "News Intelligence", "Data Table"])
 
-        st.markdown("""
-        **Steps:**
-        1. Scan QR  
-        2. Pay ₹199  
-        3. Enter UTR below  
-        """)
+    # 🔥 ADD QR SECTION HERE
+    st.markdown("### 💳 Scan & Pay")
+
+    st.markdown('<div class="qr-box">', unsafe_allow_html=True)
+    st.image("qr.png", width=220)
+    st.markdown("**Scan QR to upgrade**")
+    st.markdown("Pay ₹199 to unlock PRO 🚀")
+    st.markdown('</div>', unsafe_allow_html=True)
 
         # UTR input
         utr = st.text_input("Enter UTR / Transaction ID")
