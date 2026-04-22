@@ -272,7 +272,40 @@ def generate_ships():
             "type": random.choice(["Oil Tanker","LPG Carrier"])
         })
     return pd.DataFrame(ships)
+import requests
+# ---------------- EMAIL ALERT FUNCTION ---------------- #
+import smtplib
 
+def send_email_alert(message):
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+
+        server.login("your_email@gmail.com", "yhbexhyfiouxjvvt")
+
+        server.sendmail(
+            "your_email@gmail.com",
+            "client@email.com",
+            message
+        )
+
+        server.quit()
+
+    except Exception as e:
+        print("Email error:", e)
+def get_oil_price():
+    try:
+        API_KEY = "YOUR_API_KEY"
+
+        url = f"https://www.alphavantage.co/query?function=WTI&interval=daily&apikey={API_KEY}"
+        res = requests.get(url)
+        data = res.json()
+
+        latest = list(data["data"])[0]
+        return float(latest["value"])
+
+    except:
+        return 82.5  # fallback
 df = generate_ships()
 news = fetch_news()
 
@@ -377,7 +410,30 @@ elif page == "Trader Intelligence":
     col2.metric("🔥 LPG Market Index", int(lpg_index))
 
     st.markdown("---")
+import pandas as pd
 
+def get_price_history():
+    try:
+        API_KEY = "YOUR_API_KEY"
+        url = f"https://www.alphavantage.co/query?function=WTI&interval=daily&apikey={API_KEY}"
+        res = requests.get(url)
+        data = res.json()
+
+        df = pd.DataFrame(data["data"])
+        df["date"] = pd.to_datetime(df["date"])
+        df["value"] = df["value"].astype(float)
+
+        df = df.sort_values("date")
+        return df
+
+    except:
+        return None
+
+history = get_price_history()
+
+if history is not None:
+    st.markdown("## 📉 Oil Price Trend")
+    st.line_chart(history.set_index("date")["value"])
     # ---------------- SIGNAL CARD ---------------- #
     st.markdown("## 📊 Market Signal")
 
@@ -446,6 +502,21 @@ elif page == "Trader Intelligence":
         st.error("📈 Bullish Market (Prices Rising)")
     else:
         st.success("📉 Stable Market")
+    st.markdown("## 🔔 Market Alerts")
+
+alerts = []
+
+if oil_price > 90:
+    alerts.append("🚨 Oil price spike detected")
+
+if delay > 30:
+    alerts.append("🚨 Major shipment delay expected")
+
+if len(alerts) == 0:
+    st.success("✅ No critical alerts")
+else:
+    for alert in alerts:
+        st.error(alert)
 
     # ---------------- DELAY ---------------- #
     st.markdown("### ⚠ Shipment Risk")
