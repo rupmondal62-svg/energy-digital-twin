@@ -24,7 +24,7 @@ authenticator = stauth.Authenticate(
     config['cookie']['expiry_days']
 )
 
-# ✅ SAFE LOGIN (works across versions)
+# SAFE LOGIN (multi-version support)
 try:
     name, authentication_status, username = authenticator.login("Login", "main")
 except TypeError:
@@ -45,7 +45,10 @@ elif authentication_status is None:
 # ---------------- AFTER LOGIN ---------------- #
 authenticator.logout("Logout", "sidebar")
 st.sidebar.success(f"👤 {name}")
+
+# 👇 USER ROLE
 user_role = config['credentials']['usernames'][username].get('role', 'free')
+
 # ---------------- PREMIUM CSS ---------------- #
 st.markdown("""
 <style>
@@ -79,12 +82,13 @@ with st.sidebar:
     st.title("⚡ EnerSight AI")
     st.markdown("### Navigation")
     page = st.radio("", ["Dashboard", "Live Map", "News Intelligence", "Data Table"])
-    if user_role != "pro":
-    st.sidebar.markdown("## 🚀 Upgrade to PRO")
-    st.sidebar.markdown("Unlock full intelligence system")
 
-    if st.sidebar.button("Upgrade Now"):
-        st.sidebar.info("Payment system coming soon")
+    if user_role != "pro":
+        st.markdown("## 🚀 Upgrade to PRO")
+        st.markdown("Unlock full intelligence system")
+
+        if st.button("Upgrade Now"):
+            st.info("Payment system coming soon")
 
 # ---------------- HEADER ---------------- #
 st.markdown("# 🌍 EnerSight AI")
@@ -128,23 +132,27 @@ if page == "Dashboard":
     st.markdown("## 📊 Overview")
 
     col1, col2, col3 = st.columns(3)
-    ships_to_show = df if user_role == "pro" else df.head(5)
-col1.metric("🚢 Ships", len(ships_to_show))
 
-if user_role == "free":
-    st.warning("🔒 Upgrade to PRO for full data access")
+    ships_to_show = df if user_role == "pro" else df.head(5)
+    col1.metric("🚢 Ships", len(ships_to_show))
+
     col2.metric("⚠ Risk", "Medium")
     col3.metric("📡 Status", "LIVE")
+
+    if user_role == "free":
+        st.warning("🔒 Upgrade to PRO for full data access")
 
 elif page == "Live Map":
 
     st.markdown("## 🌍 Live Map")
 
+    map_df = df if user_role == "pro" else df.head(5)
+
     st.pydeck_chart(pdk.Deck(
         layers=[
             pdk.Layer(
                 "ScatterplotLayer",
-                data = df if user_role == "pro" else df.head(5)
+                data=map_df,
                 get_position='[lon, lat]',
                 get_radius=200000,
                 get_color='[255, 100, 0]'
@@ -166,7 +174,7 @@ elif page == "News Intelligence":
     else:
         news_to_show = news if user_role == "pro" else news[:3]
 
-for article in news_to_show:
+        for article in news_to_show:
             st.markdown(f"""
             <div class="news-card">
             <b>{article['title']}</b><br>
