@@ -87,8 +87,26 @@ with st.sidebar:
         st.markdown("## 🚀 Upgrade to PRO")
         st.markdown("Unlock full intelligence system")
 
-       if st.button("Upgrade Now"):
-    st.markdown("[👉 Pay & Upgrade](https://rzp.io/l/yourpaymentlink)")
+      if st.button("Upgrade Now"):
+    st.markdown("## 💳 Scan & Pay")
+    st.image("qr.png", width=250)
+
+    st.success("After payment, contact support or wait for activation")
+
+    st.markdown("""
+    **Steps:**
+    1. Scan QR
+    2. Pay ₹199
+    3. Send screenshot
+    4. Get PRO access
+    """)
+    st.markdown("### 💎 PRO Benefits")
+st.markdown("""
+- Unlimited ship tracking  
+- Full news intelligence  
+- Advanced analytics  
+- Priority updates  
+""")
 
 # ---------------- HEADER ---------------- #
 st.markdown("# 🌍 EnerSight AI")
