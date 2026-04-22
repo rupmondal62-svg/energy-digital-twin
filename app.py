@@ -45,6 +45,8 @@ elif authentication_status is None:
 # ---------------- AFTER LOGIN ---------------- #
 authenticator.logout("Logout", "sidebar")
 st.sidebar.success(f"👤 {name}")
+
+# ---------------- HERO ---------------- #
 st.markdown("""
 <div style="
     background: linear-gradient(135deg,#0f172a,#1e293b);
@@ -58,6 +60,7 @@ st.markdown("""
     <p>Track Oil, LPG & Energy Supply Chains in Real-Time</p>
 </div>
 """, unsafe_allow_html=True)
+
 # ---------------- FEATURE CARDS ---------------- #
 col1, col2, col3 = st.columns(3)
 
@@ -91,12 +94,7 @@ st.markdown("## 🌍 Global Energy Movement")
 st.markdown("""
 Track global movement of Oil, LPG and strategic energy resources across key maritime routes.
 """)
-    # ---------------- GLOBAL ENERGY VISUAL SECTION ---------------- #
-st.markdown("## 🌍 Global Energy Movement")
 
-st.markdown("""
-Track global movement of Oil, LPG and strategic energy resources across key maritime routes.
-""")
 # ---------------- INDIA ENERGY TRUST SECTION ---------------- #
 st.markdown("## 🇮🇳 Energy Infrastructure Intelligence")
 
@@ -108,6 +106,7 @@ Track and analyze energy logistics including:
 - Government Energy Networks  
 - Strategic Supply Chains  
 """)
+
 # ---------------- ROLE SYSTEM ---------------- #
 def check_paid_user(username):
     try:
@@ -126,72 +125,24 @@ else:
 st.markdown("""
 <style>
 
-/* -------- GLOBAL -------- */
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
 }
 
-/* -------- MAIN BACKGROUND -------- */
 .main {
     background: #f8fafc;
     color: #0f172a;
 }
 
-/* -------- SIDEBAR -------- */
 section[data-testid="stSidebar"] {
     background: #ffffff !important;
     border-right: 1px solid #e2e8f0;
 }
 
-/* Sidebar text */
 section[data-testid="stSidebar"] * {
     color: #0f172a !important;
 }
 
-/* Sidebar title */
-section[data-testid="stSidebar"] h1, 
-section[data-testid="stSidebar"] h2 {
-    font-weight: 600;
-}
-
-/* -------- NAV RADIO -------- */
-div[role="radiogroup"] > label {
-    background: transparent;
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 5px;
-    transition: 0.2s;
-}
-
-div[role="radiogroup"] > label:hover {
-    background: #f1f5f9;
-}
-
-div[role="radiogroup"] input:checked + div {
-    background: #e0e7ff;
-    border-radius: 10px;
-}
-
-/* -------- CARDS -------- */
-[data-testid="stMetric"] {
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-/* -------- HEADINGS -------- */
-h1 {
-    font-size: 38px;
-    font-weight: 700;
-}
-
-h2 {
-    font-weight: 600;
-}
-
-/* -------- NEWS CARD -------- */
 .news-card {
     padding: 16px;
     background: white;
@@ -199,28 +150,19 @@ h2 {
     border-radius: 12px;
     margin-bottom: 12px;
 }
+
 .news-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     transition: 0.3s;
 }
-/* -------- QR BOX -------- */
+
 .qr-box {
     background: white;
     border: 1px solid #e2e8f0;
     border-radius: 16px;
     padding: 15px;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-/* -------- BUTTON -------- */
-.stButton>button {
-    border-radius: 10px;
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
-    color: white;
-    border: none;
-    padding: 8px 16px;
 }
 
 </style>
@@ -229,41 +171,15 @@ h2 {
 # ---------------- SIDEBAR ---------------- #
 with st.sidebar:
     st.title("⚡ EnerSight AI")
-    st.markdown("### Navigation")
-
     page = st.radio("", ["Dashboard", "Live Map", "News Intelligence", "Data Table"])
 
     if user_role != "pro":
         st.markdown("## 🚀 Upgrade to PRO")
 
-        # ✅ QR SECTION (FIXED)
-        st.markdown("### 💳 Scan & Pay")
-
         st.markdown('<div class="qr-box">', unsafe_allow_html=True)
         st.image("qr.png", width=220)
-        st.markdown("**Scan QR to upgrade**")
-        st.markdown("Pay ₹199 to unlock PRO 🚀")
+        st.markdown("Scan QR to upgrade")
         st.markdown('</div>', unsafe_allow_html=True)
-
-        # ✅ UTR INPUT
-        utr = st.text_input("Enter UTR / Transaction ID")
-
-        if st.button("Verify Payment"):
-            if utr:
-                with open("paid_users.txt", "a") as f:
-                    f.write(username + "\n")
-
-                st.success("Payment recorded! Refresh page in 5 seconds.")
-            else:
-                st.error("Please enter transaction ID")
-
-        st.markdown("### 💎 PRO Benefits")
-        st.markdown("""
-        - Unlimited ship tracking  
-        - Full news intelligence  
-        - Advanced analytics  
-        - Priority updates  
-        """)
 
 # ---------------- HEADER ---------------- #
 st.markdown("# 🌍 EnerSight AI")
@@ -276,85 +192,31 @@ def fetch_news():
     API_KEY = os.getenv("NEWS_API_KEY")
     if not API_KEY:
         return []
-    url = f"https://newsapi.org/v2/everything?q=energy&apiKey={API_KEY}"
     try:
-        res = requests.get(url)
+        res = requests.get(f"https://newsapi.org/v2/everything?q=energy&apiKey={API_KEY}")
         data = res.json()
-        return [{"title": a["title"], "source": a["source"]["name"]} for a in data.get("articles", [])[:5]]
+        return data.get("articles", [])[:5]
     except:
         return []
 
 def generate_ships():
-    base = [(26,56),(25,57),(24,60),(22,63),(20,66)]
-    ships = []
-    for lat, lon in base:
-        ships.append({
-            "lat": lat,
-            "lon": lon,
-            "type": random.choice(["Oil Tanker","LPG Carrier"])
-        })
-    return pd.DataFrame(ships)
+    return pd.DataFrame([
+        {"lat": 25, "lon": 60},
+        {"lat": 18, "lon": 70}
+    ])
 
 df = generate_ships()
 news = fetch_news()
 
 # ---------------- PAGES ---------------- #
 if page == "Dashboard":
-
     st.markdown("## 📊 Overview")
 
-    col1, col2, col3 = st.columns(3)
-
-    ships_to_show = df if user_role == "pro" else df.head(5)
-    col1.metric("🚢 Ships", len(ships_to_show))
-
-    col2.metric("⚠ Risk", "Medium")
-    col3.metric("📡 Status", "LIVE")
-
-    if user_role == "free":
-        st.warning("🔒 Upgrade to PRO for full access")
-
 elif page == "Live Map":
-
     st.markdown("## 🌍 Live Map")
 
-    map_df = df if user_role == "pro" else df.head(5)
-
-    st.pydeck_chart(pdk.Deck(
-        layers=[
-            pdk.Layer(
-                "ScatterplotLayer",
-                data=map_df,
-                get_position='[lon, lat]',
-                get_radius=200000,
-                get_color='[255, 100, 0]'
-            )
-        ],
-        initial_view_state=pdk.ViewState(
-            latitude=22,
-            longitude=65,
-            zoom=3
-        )
-    ))
-
 elif page == "News Intelligence":
-
     st.markdown("## 📰 Energy News")
 
-    if not news:
-        st.info("No news available")
-    else:
-        news_to_show = news if user_role == "pro" else news[:3]
-
-        for article in news_to_show:
-            st.markdown(f"""
-            <div class="news-card">
-            <b>{article['title']}</b><br>
-            {article['source']}
-            </div>
-            """, unsafe_allow_html=True)
-
 elif page == "Data Table":
-
-    st.markdown("## 📋 Data")
     st.dataframe(df)
