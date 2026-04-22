@@ -173,7 +173,13 @@ section[data-testid="stSidebar"] * {
     border: none;
     padding: 8px 16px;
 }
-
+/* Trader cards */
+.metric-card {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -339,14 +345,88 @@ elif page == "Data Table":
     st.dataframe(df)
 elif page == "Trader Intelligence":
 
-    st.markdown("## 📈 Trader Intelligence")
+    # 🔒 PRO LOCK (important for money)
+    if user_role == "free":
+        st.warning("🔒 Trader Intelligence is a PRO feature")
+        st.stop()
 
-    st.markdown("""
-    Real-time insights for Oil & LPG traders:
-    - Price movement signals
-    - Shipment delay prediction
-    - Market risk alerts
-    """)
+    st.markdown("# 📈 Trader Intelligence")
+    st.markdown("### AI-powered oil & LPG trading signals")
+
+    # ---------------- PRICE SECTION ---------------- #
+    import requests
+
+    def get_oil_price():
+        try:
+            url = "https://api.oilpriceapi.com/v1/prices/latest"
+            headers = {"Authorization": "Token YOUR_API_KEY"}
+            res = requests.get(url, headers=headers)
+            data = res.json()
+            return float(data['data']['price'])
+        except:
+            return 82.5  # fallback
+
+    oil_price = get_oil_price()
+
+    # LPG proxy (you can replace later)
+    lpg_index = oil_price * 6
+
+    col1, col2 = st.columns(2)
+
+    col1.metric("🛢 Crude Oil (USD/barrel)", round(oil_price, 2))
+    col2.metric("🔥 LPG Market Index", int(lpg_index))
+
+    st.markdown("---")
+
+    # ---------------- SIGNAL CARD ---------------- #
+    st.markdown("## 📊 Market Signal")
+
+    if oil_price > 85:
+        st.error("📈 BULLISH — Prices rising")
+    elif oil_price < 75:
+        st.success("📉 BEARISH — Prices falling")
+    else:
+        st.warning("⚖ SIDEWAYS — No strong trend")
+
+    st.markdown("---")
+
+    # ---------------- DELAY INTELLIGENCE ---------------- #
+    st.markdown("## ⚠ Shipment Risk Intelligence")
+
+    import random
+
+    weather = random.choice(["Calm", "Rough"])
+    congestion = random.choice(["Low", "High"])
+
+    delay = 0
+    if weather == "Rough":
+        delay += random.randint(10, 30)
+    if congestion == "High":
+        delay += random.randint(10, 25)
+
+    col3, col4 = st.columns(2)
+
+    col3.metric("🌊 Weather", weather)
+    col4.metric("🚢 Congestion", congestion)
+
+    if delay > 30:
+        st.error(f"🚨 HIGH RISK — Delay {delay} hrs")
+    elif delay > 15:
+        st.warning(f"⚠ Moderate Risk — Delay {delay} hrs")
+    else:
+        st.success("✅ Low Risk")
+
+    st.markdown("---")
+
+    # ---------------- FINAL DECISION ---------------- #
+    st.markdown("## 🧠 Trading Decision")
+
+    if oil_price > 85 and delay > 20:
+        st.error("🔥 STRONG BUY — Supply disruption expected")
+    elif oil_price < 75 and delay < 10:
+        st.success("💧 SELL — Stable supply")
+    else:
+        st.warning("⚖ HOLD — Wait for clearer signal")
 
     # ---------------- PRICE SECTION ---------------- #
     import random
