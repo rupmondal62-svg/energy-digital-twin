@@ -45,7 +45,7 @@ elif authentication_status is None:
 # ---------------- AFTER LOGIN ---------------- #
 authenticator.logout("Logout", "sidebar")
 st.sidebar.success(f"👤 {name}")
-
+user_role = config['credentials']['usernames'][username].get('role', 'free')
 # ---------------- PREMIUM CSS ---------------- #
 st.markdown("""
 <style>
@@ -79,6 +79,12 @@ with st.sidebar:
     st.title("⚡ EnerSight AI")
     st.markdown("### Navigation")
     page = st.radio("", ["Dashboard", "Live Map", "News Intelligence", "Data Table"])
+    if user_role != "pro":
+    st.sidebar.markdown("## 🚀 Upgrade to PRO")
+    st.sidebar.markdown("Unlock full intelligence system")
+
+    if st.sidebar.button("Upgrade Now"):
+        st.sidebar.info("Payment system coming soon")
 
 # ---------------- HEADER ---------------- #
 st.markdown("# 🌍 EnerSight AI")
@@ -122,7 +128,11 @@ if page == "Dashboard":
     st.markdown("## 📊 Overview")
 
     col1, col2, col3 = st.columns(3)
-    col1.metric("🚢 Ships", len(df))
+    ships_to_show = df if user_role == "pro" else df.head(5)
+col1.metric("🚢 Ships", len(ships_to_show))
+
+if user_role == "free":
+    st.warning("🔒 Upgrade to PRO for full data access")
     col2.metric("⚠ Risk", "Medium")
     col3.metric("📡 Status", "LIVE")
 
@@ -134,7 +144,7 @@ elif page == "Live Map":
         layers=[
             pdk.Layer(
                 "ScatterplotLayer",
-                data=df,
+                data = df if user_role == "pro" else df.head(5)
                 get_position='[lon, lat]',
                 get_radius=200000,
                 get_color='[255, 100, 0]'
@@ -154,7 +164,9 @@ elif page == "News Intelligence":
     if not news:
         st.info("No news available (check API key)")
     else:
-        for article in news:
+        news_to_show = news if user_role == "pro" else news[:3]
+
+for article in news_to_show:
             st.markdown(f"""
             <div class="news-card">
             <b>{article['title']}</b><br>
