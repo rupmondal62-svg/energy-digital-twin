@@ -182,7 +182,7 @@ with st.sidebar:
     st.title("⚡ EnerSight AI")
     st.markdown("### Navigation")
 
-    page = st.radio("", ["Dashboard", "Live Map", "News Intelligence", "Data Table"])
+    page = st.radio("", ["Dashboard", "Live Map", "News Intelligence", "Data Table", "Trader Intelligence"])
 
     if user_role != "pro":
         st.markdown('<div class="qr-box">', unsafe_allow_html=True)
@@ -337,3 +337,62 @@ elif page == "Data Table":
 
     st.markdown("## 📋 Data")
     st.dataframe(df)
+elif page == "Trader Intelligence":
+
+    st.markdown("## 📈 Trader Intelligence")
+
+    st.markdown("""
+    Real-time insights for Oil & LPG traders:
+    - Price movement signals
+    - Shipment delay prediction
+    - Market risk alerts
+    """)
+
+    # ---------------- PRICE SECTION ---------------- #
+    import random
+
+    oil_price = random.randint(70, 95)
+    lpg_price = random.randint(400, 700)
+
+    col1, col2 = st.columns(2)
+
+    col1.metric("🛢 Oil Price (USD)", oil_price)
+    col2.metric("🔥 LPG Index", lpg_price)
+
+    # ---------------- SIGNAL ---------------- #
+    st.markdown("### 📊 Market Signal")
+
+    if oil_price > 85:
+        st.error("📈 Bullish Market (Prices Rising)")
+    else:
+        st.success("📉 Stable Market")
+
+    # ---------------- DELAY ---------------- #
+    st.markdown("### ⚠ Shipment Risk")
+
+    weather = random.choice(["Calm", "Rough"])
+    congestion = random.choice(["Low", "High"])
+
+    delay = 0
+    if weather == "Rough":
+        delay += 20
+    if congestion == "High":
+        delay += 15
+
+    st.write(f"🌊 Weather: {weather}")
+    st.write(f"🚢 Congestion: {congestion}")
+
+    if delay > 25:
+        st.error(f"🚨 High Delay Risk ({delay} hrs)")
+    else:
+        st.success("✅ No major delay")
+
+    # ---------------- FINAL DECISION ---------------- #
+    st.markdown("### 🧠 Trading Decision")
+
+    if oil_price > 85 and delay > 20:
+        st.error("🔥 STRONG BUY SIGNAL")
+    elif oil_price < 75 and delay < 10:
+        st.success("💧 SELL SIGNAL")
+    else:
+        st.warning("⚖ HOLD POSITION")
