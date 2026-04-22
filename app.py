@@ -163,6 +163,15 @@ section[data-testid="stSidebar"] * {
     border-radius: 16px;
     padding: 15px;
     text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.stButton>button {
+    border-radius: 10px;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: white;
+    border: none;
+    padding: 8px 16px;
 }
 
 </style>
@@ -171,15 +180,38 @@ section[data-testid="stSidebar"] * {
 # ---------------- SIDEBAR ---------------- #
 with st.sidebar:
     st.title("⚡ EnerSight AI")
+    st.markdown("### Navigation")
+
     page = st.radio("", ["Dashboard", "Live Map", "News Intelligence", "Data Table"])
 
     if user_role != "pro":
         st.markdown("## 🚀 Upgrade to PRO")
 
+        st.markdown("### 💳 Scan & Pay")
+
         st.markdown('<div class="qr-box">', unsafe_allow_html=True)
         st.image("qr.png", width=220)
-        st.markdown("Scan QR to upgrade")
+        st.markdown("**Scan QR to upgrade**")
+        st.markdown("Pay ₹199 to unlock PRO 🚀")
         st.markdown('</div>', unsafe_allow_html=True)
+
+        utr = st.text_input("Enter UTR / Transaction ID")
+
+        if st.button("Verify Payment"):
+            if utr:
+                with open("paid_users.txt", "a") as f:
+                    f.write(username + "\n")
+                st.success("Payment recorded! Refresh page in 5 seconds.")
+            else:
+                st.error("Please enter transaction ID")
+
+        st.markdown("### 💎 PRO Benefits")
+        st.markdown("""
+        - Unlimited ship tracking  
+        - Full news intelligence  
+        - Advanced analytics  
+        - Priority updates  
+        """)
 
 # ---------------- HEADER ---------------- #
 st.markdown("# 🌍 EnerSight AI")
@@ -192,31 +224,85 @@ def fetch_news():
     API_KEY = os.getenv("NEWS_API_KEY")
     if not API_KEY:
         return []
+    url = f"https://newsapi.org/v2/everything?q=energy&apiKey={API_KEY}"
     try:
-        res = requests.get(f"https://newsapi.org/v2/everything?q=energy&apiKey={API_KEY}")
+        res = requests.get(url)
         data = res.json()
-        return data.get("articles", [])[:5]
+        return [{"title": a["title"], "source": a["source"]["name"]} for a in data.get("articles", [])[:5]]
     except:
         return []
 
 def generate_ships():
-    return pd.DataFrame([
-        {"lat": 25, "lon": 60},
-        {"lat": 18, "lon": 70}
-    ])
+    base = [(26,56),(25,57),(24,60),(22,63),(20,66)]
+    ships = []
+    for lat, lon in base:
+        ships.append({
+            "lat": lat,
+            "lon": lon,
+            "type": random.choice(["Oil Tanker","LPG Carrier"])
+        })
+    return pd.DataFrame(ships)
 
 df = generate_ships()
 news = fetch_news()
 
 # ---------------- PAGES ---------------- #
 if page == "Dashboard":
+
     st.markdown("## 📊 Overview")
 
+    col1, col2, col3 = st.columns(3)
+
+    ships_to_show = df if user_role == "pro" else df.head(5)
+    col1.metric("🚢 Ships", len(ships_to_show))
+
+    col2.metric("⚠ Risk", "Medium")
+    col3.metric("📡 Status", "LIVE")
+
+    if user_role == "free":
+        st.warning("🔒 Upgrade to PRO for full access")
+
 elif page == "Live Map":
+
     st.markdown("## 🌍 Live Map")
 
+    map_df = df if user_role == "pro" else df.head(5)
+
+    st.pydeck_chart(pdk.Deck(
+        layers=[
+            pdk.Layer(
+                "ScatterplotLayer",
+                data=map_df,
+                get_position='[lon, lat]',
+                get_radius=200000,
+                get_color='[255, 100, 0]'
+            )
+        ],
+        initial_view_state=pdk.ViewState(
+            latitude=22,
+            longitude=65,
+            zoom=3
+        )
+    ))
+
 elif page == "News Intelligence":
+
     st.markdown("## 📰 Energy News")
 
+    if not news:
+        st.info("No news available")
+    else:
+        news_to_show = news if user_role == "pro" else news[:3]
+
+        for article in news_to_show:
+            st.markdown(f"""
+            <div class="news-card">
+            <b>{article['title']}</b><br>
+            {article['source']}
+            </div>
+            """, unsafe_allow_html=True)
+
 elif page == "Data Table":
+
+    st.markdown("## 📋 Data")
     st.dataframe(df)
