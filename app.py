@@ -87,8 +87,8 @@ with st.sidebar:
         st.markdown("## 🚀 Upgrade to PRO")
         st.markdown("Unlock full intelligence system")
 
-        if st.button("Upgrade Now"):
-            st.info("Payment system coming soon")
+       if st.button("Upgrade Now"):
+    st.markdown("[👉 Pay & Upgrade](https://rzp.io/l/yourpaymentlink)")
 
 # ---------------- HEADER ---------------- #
 st.markdown("# 🌍 EnerSight AI")
