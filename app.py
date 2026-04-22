@@ -47,7 +47,18 @@ authenticator.logout("Logout", "sidebar")
 st.sidebar.success(f"👤 {name}")
 
 # 👇 USER ROLE
-user_role = config['credentials']['usernames'][username].get('role', 'free')
+def check_paid_user(username):
+    try:
+        with open("paid_users.txt", "r") as f:
+            users = f.read().splitlines()
+            return username in users
+    except:
+        return False
+
+if check_paid_user(username):
+    user_role = "pro"
+else:
+    user_role = config['credentials']['usernames'][username].get('role', 'free')
 
 # ---------------- PREMIUM CSS ---------------- #
 st.markdown("""
@@ -100,6 +111,23 @@ with st.sidebar:
     3. Send screenshot
     4. Get PRO access
     """)
+    if user_role != "pro":
+    st.markdown("## 💳 Upgrade to PRO")
+
+    st.image("qr.png", width=250)
+
+    st.markdown("### Enter Payment Details")
+
+    utr = st.text_input("Enter UTR / Transaction ID")
+
+   if st.button("Verify Payment"):
+    if utr:
+        with open("paid_users.txt", "a") as f:
+            f.write(username + "\n")
+
+        st.success("Payment recorded! Please refresh in a few seconds.")
+        else:
+            st.error("Please enter transaction ID")
     st.markdown("### 💎 PRO Benefits")
 st.markdown("""
 - Unlimited ship tracking  
