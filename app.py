@@ -185,16 +185,59 @@ with st.sidebar:
     page = st.radio("", ["Dashboard", "Live Map", "News Intelligence", "Data Table"])
 
     if user_role != "pro":
-        st.markdown("## 🚀 Upgrade to PRO")
-
-        st.markdown("### 💳 Scan & Pay")
-
         st.markdown('<div class="qr-box">', unsafe_allow_html=True)
-        st.image("qr.png", width=220)
-        st.markdown("**Scan QR to upgrade**")
-        st.markdown("Pay ₹199 to unlock PRO 🚀")
-        st.markdown('</div>', unsafe_allow_html=True)
+st.image("qr.png", width=220)
+st.markdown("**Scan QR to upgrade**")
+st.markdown("Pay ₹199 to unlock PRO 🚀")
+st.markdown('</div>', unsafe_allow_html=True)
+st.markdown("""
+<div style="
+    color:red;
+    font-weight:bold;
+    margin-top:10px;
+">
+⚠ Limited access – Upgrade required for full data
+</div>
+""", unsafe_allow_html=True)
+st.markdown("""
+<div style="
+    margin-top:20px;
+    padding:15px;
+    background:#ecfdf5;
+    border-radius:10px;
+    border:1px solid #10b981;
+">
+✅ Used by energy analysts & logistics planners<br>
+📈 Real-time global tracking insights
+</div>
+""", unsafe_allow_html=True)
+# 🔥 ADD THIS PART HERE
+st.markdown("---")
 
+st.markdown("""
+<div style="
+    background: linear-gradient(135deg,#6366f1,#4f46e5);
+    padding:15px;
+    border-radius:12px;
+    color:white;
+    text-align:center;
+    font-weight:bold;
+">
+🚀 Unlock PRO Access
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div style="
+    color:red;
+    font-weight:bold;
+    margin-top:10px;
+">
+⚠ Limited access – Upgrade required for full data
+</div>
+""", unsafe_allow_html=True)
+
+# 👇 THEN KEEP YOUR EXISTING CODE
         utr = st.text_input("Enter UTR / Transaction ID")
 
         if st.button("Verify Payment"):
@@ -292,15 +335,20 @@ elif page == "News Intelligence":
     if not news:
         st.info("No news available")
     else:
-        news_to_show = news if user_role == "pro" else news[:3]
-
-        for article in news_to_show:
-            st.markdown(f"""
-            <div class="news-card">
-            <b>{article['title']}</b><br>
-            {article['source']}
-            </div>
-            """, unsafe_allow_html=True)
+        for i, article in enumerate(news_to_show):
+    if user_role == "free" and i >= 2:
+        st.markdown("""
+        <div class="news-card" style="filter: blur(4px);">
+        🔒 Premium News Locked
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown(f"""
+        <div class="news-card">
+        <b>{article['title']}</b><br>
+        {article['source']}
+        </div>
+        """, unsafe_allow_html=True)
 
 elif page == "Data Table":
 
