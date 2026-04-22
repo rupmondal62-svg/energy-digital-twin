@@ -2,7 +2,16 @@ credentials:
   usernames:
     rup:
       name: Rup Mondal
-      password: '$2b$12$KIXQ...hashedpasswordhere'
+      password: '$2b$12$eqzoggub6qpgKMkKZ.3oaOfPKHzlTXW6z2fNnpqV22a11tvsvyTDq'
+      role: admin
+    testuser:
+      name: Test User
+      password: '$2b$12$hfuxEgdN5cS4zDafJRzBFuLyyhKde2YYU/4sXyPvJeTCtWIzBa9IS'
+      role: free
+    premiumuser:
+      name: Premium User
+      password: '$2b$12$ek7uoVXQf6Cxkfb4npRtbOhawT5lEYQtOObwtrBWLAQRNnz6JVsNC'
+      role: pro
 
 cookie:
   name: energysight_cookie
