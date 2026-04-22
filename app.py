@@ -45,7 +45,69 @@ elif authentication_status is None:
 # ---------------- AFTER LOGIN ---------------- #
 authenticator.logout("Logout", "sidebar")
 st.sidebar.success(f"👤 {name}")
+st.markdown("""
+<div style="
+    background: linear-gradient(135deg,#0f172a,#1e293b);
+    padding:40px;
+    border-radius:20px;
+    color:white;
+    text-align:left;
+">
+    <h1>⚡ EnerSight AI</h1>
+    <h3>Global Energy Intelligence Platform</h3>
+    <p>Track Oil, LPG & Energy Supply Chains in Real-Time</p>
+</div>
+""", unsafe_allow_html=True)
+# ---------------- FEATURE CARDS ---------------- #
+col1, col2, col3 = st.columns(3)
 
+with col1:
+    st.markdown("""
+    <div class="news-card">
+    <h4>🚢 Ship Tracking</h4>
+    Real-time oil & LPG vessel monitoring
+    </div>
+    """, unsafe_allow_html=True)
+
+with col2:
+    st.markdown("""
+    <div class="news-card">
+    <h4>📊 AI Intelligence</h4>
+    Predict supply chain disruptions
+    </div>
+    """, unsafe_allow_html=True)
+
+with col3:
+    st.markdown("""
+    <div class="news-card">
+    <h4>🌍 Global Data</h4>
+    Energy insights across regions
+    </div>
+    """, unsafe_allow_html=True)
+
+# ---------------- GLOBAL ENERGY VISUAL SECTION ---------------- #
+st.markdown("## 🌍 Global Energy Movement")
+
+st.markdown("""
+Track global movement of Oil, LPG and strategic energy resources across key maritime routes.
+""")
+    # ---------------- GLOBAL ENERGY VISUAL SECTION ---------------- #
+st.markdown("## 🌍 Global Energy Movement")
+
+st.markdown("""
+Track global movement of Oil, LPG and strategic energy resources across key maritime routes.
+""")
+# ---------------- INDIA ENERGY TRUST SECTION ---------------- #
+st.markdown("## 🇮🇳 Energy Infrastructure Intelligence")
+
+st.markdown("""
+Track and analyze energy logistics including:
+
+- Oil Tankers  
+- LPG Distribution  
+- Government Energy Networks  
+- Strategic Supply Chains  
+""")
 # ---------------- ROLE SYSTEM ---------------- #
 def check_paid_user(username):
     try:
@@ -137,7 +199,11 @@ h2 {
     border-radius: 12px;
     margin-bottom: 12px;
 }
-
+.news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
 /* -------- QR BOX -------- */
 .qr-box {
     background: white;
