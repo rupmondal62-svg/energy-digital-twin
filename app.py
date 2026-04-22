@@ -163,27 +163,23 @@ h2 {
 # ---------------- SIDEBAR ---------------- #
 with st.sidebar:
     st.title("⚡ EnerSight AI")
+    st.markdown("### Navigation")
+
     page = st.radio("", ["Dashboard", "Live Map", "News Intelligence", "Data Table"])
 
     if user_role != "pro":
         st.markdown("## 🚀 Upgrade to PRO")
 
-        # QR Section
-        with st.sidebar:
-    st.title("⚡ EnerSight AI")
-    st.markdown("### Navigation")
-    page = st.radio("", ["Dashboard", "Live Map", "News Intelligence", "Data Table"])
+        # ✅ QR SECTION (FIXED)
+        st.markdown("### 💳 Scan & Pay")
 
-    # 🔥 ADD QR SECTION HERE
-    st.markdown("### 💳 Scan & Pay")
+        st.markdown('<div class="qr-box">', unsafe_allow_html=True)
+        st.image("qr.png", width=220)
+        st.markdown("**Scan QR to upgrade**")
+        st.markdown("Pay ₹199 to unlock PRO 🚀")
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="qr-box">', unsafe_allow_html=True)
-    st.image("qr.png", width=220)
-    st.markdown("**Scan QR to upgrade**")
-    st.markdown("Pay ₹199 to unlock PRO 🚀")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-        # UTR input
+        # ✅ UTR INPUT
         utr = st.text_input("Enter UTR / Transaction ID")
 
         if st.button("Verify Payment"):
