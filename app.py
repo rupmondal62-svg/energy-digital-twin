@@ -239,19 +239,18 @@ elif page == "Data Table":
     st.dataframe(df)
 
 elif page == "Trader Intelligence":
-
     if user_role == "free":
-      st.warning("🔒 Trader Intelligence is a PRO feature")
+        st.warning("🔒 Trader Intelligence is a PRO feature")
 
-      st.markdown("""
-    ### 🚀 Upgrade to PRO
-    - Real-time oil price charts  
-    - AI trading signals  
-    - Smart alerts (Email + Delay)  
-    - Unlimited data access  
-    """)
+        st.markdown("""
+        ### 🚀 Upgrade to PRO
+        - Real-time oil price charts  
+        - AI trading signals  
+        - Smart alerts (Email + Delay)  
+        - Unlimited data access  
+        """)
 
-    st.stop()
+        st.stop()
     oil_price = get_oil_price()
 
     # ---------------- SIGNAL ---------------- #
