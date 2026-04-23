@@ -262,14 +262,40 @@ elif page == "Trader Intelligence":
         st.success("📉 BEARISH — Prices falling")
     else:
         st.warning("⚖ SIDEWAYS")
-
     st.markdown("---")
-    # ---------------- PRICE CHART ---------------- #
-    history = get_price_history()
+    # ---------------- LIVE MARKET CHARTS ---------------- #
 
-    if history is not None:
-        st.markdown("## 📉 Oil Price Trend")
+    st.markdown("## 📈 Live Oil Market")
+
+    history = get_intraday_price("USO")  # Oil proxy
+
+if history is not None:
+        # 🔥 ADD MOVING AVERAGE HERE
+        history["MA"] = history["value"].rolling(5).mean()
+
+        # ✅ SHOW BOTH LINES
+        st.line_chart(history.set_index("date")[["value", "MA"]])
         st.line_chart(history.set_index("date")["value"])
+        st.metric("Current Oil Price", round(latest, 2))
+        # ✅ ADD AI PREDICTION HERE (STEP-3)
+        st.markdown("## 🧠 AI Trend Prediction")
+
+        latest = history["value"].iloc[-1]
+        previous = history["value"].iloc[-5]
+
+        if latest > previous:
+            st.success("📈 Uptrend detected (Bullish)")
+        elif latest < previous:
+            st.error("📉 Downtrend detected (Bearish)")
+        else:
+            st.warning("⚖ Sideways market")
+
+st.markdown("## 🔥 Live Gas Market")
+
+gas = get_intraday_price("UNG")  # Gas proxy
+
+if gas is not None:
+    st.line_chart(gas.set_index("date")["value"])
     # ---------------- DELAY ---------------- #
     weather = random.choice(["Calm", "Rough"])
     congestion = random.choice(["Low", "High"])
@@ -281,6 +307,31 @@ elif page == "Trader Intelligence":
         delay += random.randint(10, 25)
         st.metric("Weather", weather)
         st.metric("Congestion", congestion)
+
+    def get_intraday_price(symbol="USO"):
+        API_KEY = os.getenv("ALPHA_API_KEY")
+
+        url = f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=5min&apikey={API_KEY}"
+
+        try:
+            res = requests.get(url)
+            data = res.json()
+
+            ts = data["Time Series (5min)"]
+
+            df = pd.DataFrame([
+            {"date": k, "value": float(v["4. close"])}
+            for k, v in ts.items()
+            ])
+
+            df["date"] = pd.to_datetime(df["date"])
+            df = df.sort_values("date")
+
+            return df
+
+        except:
+            return None
+    
         # ---------------- COOLDOWN SETUP ---------------- #
     import time
 
