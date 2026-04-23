@@ -45,7 +45,33 @@ authenticator.logout("Logout", "sidebar")
 st.sidebar.success(f"👤 {name}")
 
 # ---------------- FUNCTIONS (FIXED POSITION) ---------------- #
+def get_price_history():
+    import requests
+    import pandas as pd
+    import os
 
+    API_KEY = os.getenv("ALPHA_API_KEY")
+
+    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=USO&apikey={API_KEY}"
+
+    try:
+        res = requests.get(url)
+        data = res.json()
+
+        ts = data["Time Series (Daily)"]
+
+        df = pd.DataFrame([
+            {"date": k, "value": float(v["4. close"])}
+            for k, v in ts.items()
+        ])
+
+        df["date"] = pd.to_datetime(df["date"])
+        df = df.sort_values("date")
+
+        return df
+
+    except:
+        return None
 def get_oil_price():
     try:
         url = "https://api.oilpriceapi.com/v1/prices/latest"
@@ -215,11 +241,17 @@ elif page == "Data Table":
 elif page == "Trader Intelligence":
 
     if user_role == "free":
-        st.warning("🔒 Trader Intelligence is a PRO feature")
-        st.stop()
+    st.warning("🔒 Trader Intelligence is a PRO feature")
 
-    st.markdown("# 📈 Trader Intelligence")
+    st.markdown("""
+    ### 🚀 Upgrade to PRO
+    - Real-time oil price charts  
+    - AI trading signals  
+    - Smart alerts (Email + Delay)  
+    - Unlimited data access  
+    """)
 
+    st.stop()
     oil_price = get_oil_price()
 
     # ---------------- SIGNAL ---------------- #
@@ -233,12 +265,40 @@ elif page == "Trader Intelligence":
         st.warning("⚖ SIDEWAYS")
 
     st.markdown("---")
+    # ---------------- PRICE CHART ---------------- #
+    history = get_price_history()
+
+    if history is not None:
+        st.markdown("## 📉 Oil Price Trend")
+        st.line_chart(history.set_index("date")["value"])
 
     # ---------------- CHART ---------------- #
     history = get_price_history()
     if history is not None:
         st.line_chart(history.set_index("date")["value"])
+    # ---------------- ALERT SYSTEM ---------------- #
+st.markdown("## 🔔 Smart Alerts")
 
+alerts = []
+
+if oil_price > 90:
+    alerts.append("🚨 Oil breakout above $90")
+
+if oil_price < 70:
+    alerts.append("📉 Oil crash below $70")
+
+if delay > 30:
+    alerts.append("🚢 Major shipment delay risk")
+
+# Display alerts
+if len(alerts) == 0:
+    st.success("✅ No critical alerts")
+else:
+    for alert in alerts:
+        st.error(alert)
+# ---------------- EMAIL ALERT ---------------- #
+if len(alerts) > 0:
+    send_email_alert("\n".join(alerts))
     # ---------------- DELAY ---------------- #
     weather = random.choice(["Calm", "Rough"])
     congestion = random.choice(["Low", "High"])
