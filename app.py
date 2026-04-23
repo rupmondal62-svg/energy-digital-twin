@@ -131,17 +131,66 @@ st_autorefresh(interval=10000, key="refresh")
 # ---------------- PAGES ---------------- #
 
 if page == "Dashboard":
+
     st.markdown("## 📊 Overview")
+
     col1, col2, col3 = st.columns(3)
-    col1.metric("🚢 Ships", len(df))
+
+    ships_to_show = df if user_role == "pro" else df.head(5)
+
+    col1.metric("🚢 Ships", len(ships_to_show))
     col2.metric("⚠ Risk", "Medium")
     col3.metric("📡 Status", "LIVE")
 
+    if user_role == "free":
+        st.warning("🔒 Upgrade to PRO for full access")
+
 elif page == "Live Map":
+
     st.markdown("## 🌍 Live Map")
 
+    map_df = df if user_role == "pro" else df.head(5)
+
+    st.pydeck_chart(pdk.Deck(
+        layers=[
+            pdk.Layer(
+                "ScatterplotLayer",
+                data=map_df,
+                get_position='[lon, lat]',
+                get_radius=200000,
+                get_color='[255, 100, 0]'
+            )
+        ],
+        initial_view_state=pdk.ViewState(
+            latitude=22,
+            longitude=65,
+            zoom=3
+        )
+    ))
+
 elif page == "News Intelligence":
+
     st.markdown("## 📰 Energy News")
+
+    if not news:
+        st.info("No news available")
+    else:
+        news_to_show = news if user_role == "pro" else news[:5]
+
+        for i, article in enumerate(news_to_show):
+            if user_role == "free" and i >= 2:
+                st.markdown("""
+                <div class="news-card" style="filter: blur(4px);">
+                🔒 Premium News Locked
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+                <div class="news-card">
+                <b>{article['title']}</b><br>
+                {article['source']}
+                </div>
+                """, unsafe_allow_html=True)
 
 elif page == "Data Table":
     st.markdown("## 📋 Data")
