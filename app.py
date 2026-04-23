@@ -270,12 +270,21 @@ elif page == "Trader Intelligence":
     if history is not None:
         st.markdown("## 📉 Oil Price Trend")
         st.line_chart(history.set_index("date")["value"])
+    # ---------------- EMAIL ALERT ---------------- #
+    if len(alerts) > 0:
+        send_email_alert("\n".join(alerts))
+    # ---------------- DELAY ---------------- #
+    weather = random.choice(["Calm", "Rough"])
+    congestion = random.choice(["Low", "High"])
 
-    # ---------------- CHART ---------------- #
-    history = get_price_history()
-    if history is not None:
-        st.line_chart(history.set_index("date")["value"])
-    # ---------------- ALERT SYSTEM ---------------- #
+    delay = 0
+    if weather == "Rough":
+        delay += random.randint(10, 30)
+    if congestion == "High":
+        delay += random.randint(10, 25)
+        st.metric("Weather", weather)
+        st.metric("Congestion", congestion)
+        # ---------------- ALERT SYSTEM ---------------- #
     st.markdown("## 🔔 Smart Alerts")
 
     alerts = []
@@ -295,20 +304,8 @@ elif page == "Trader Intelligence":
     else:
      for alert in alerts:
         st.error(alert)
-    # ---------------- EMAIL ALERT ---------------- #
-    if len(alerts) > 0:
-        send_email_alert("\n".join(alerts))
-    # ---------------- DELAY ---------------- #
-    weather = random.choice(["Calm", "Rough"])
-    congestion = random.choice(["Low", "High"])
 
-    delay = 0
-    if weather == "Rough":
-        delay += random.randint(10, 30)
-    if congestion == "High":
-        delay += random.randint(10, 25)
-
-    st.metric("Weather", weather)
+    
     st.metric("Congestion", congestion)
 
     # ---------------- DECISION ---------------- #
