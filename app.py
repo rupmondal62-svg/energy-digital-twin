@@ -467,11 +467,11 @@ st.markdown("---")
 st.markdown("## 🧠 Trading Decision")
 
 if oil_price > 85 and delay > 20:
-        st.error("🔥 STRONG BUY — Supply disruption expected")
+    st.error("🔥 STRONG BUY — Supply disruption expected")
 elif oil_price < 75 and delay < 10:
-        st.success("💧 SELL — Stable supply")
+    st.success("💧 SELL — Stable supply")
 else:
-        st.warning("⚖ HOLD — Wait for clearer signal")
+    st.warning("⚖ HOLD — Wait for clearer signal")
 # ---------------- ALERT SYSTEM ---------------- #
 st.markdown("## 🔔 Market Alerts")
 
