@@ -251,7 +251,8 @@ st_autorefresh(interval=10000, key="refresh")
 
 # ---------------- DATA ---------------- #
 def fetch_news():
-    API_KEY = os.getenv("NEWS_API_KEY")
+    import os
+    API_KEY = os.getenv("ALPHA_API_KEY")
     if not API_KEY:
         return []
     url = f"https://newsapi.org/v2/everything?q=energy&apiKey={API_KEY}"
@@ -1014,7 +1015,6 @@ else:
 
     # ---------------- DELAY ---------------- #
     st.markdown("### ⚠ Shipment Risk")
-    elif page == "Trader Intelligence":
     weather = random.choice(["Calm", "Rough"])
     congestion = random.choice(["Low", "High"])
 
@@ -1035,28 +1035,28 @@ else:
     # ---------------- FINAL DECISION ---------------- #
     st.markdown("## 🧠 Trading Decision")
 
-    if oil_price > 85 and delay > 20:
+if oil_price > 85 and delay > 20:
     st.error("🔥 STRONG BUY — Supply disruption expected")
-    elif oil_price < 75 and delay < 10:
+elif oil_price < 75 and delay < 10:
     st.success("💧 SELL — Stable supply")
-    else:
+else:
     st.warning("⚖ HOLD — Wait for clearer signal")
 
 # ✅ ADD HERE (THIS IS THE FIX)
 # ---------------- ALERT SYSTEM ---------------- #
-    st.markdown("## 🔔 Market Alerts")
+st.markdown("## 🔔 Market Alerts")
 
-    alerts = []
+alerts = []
 
-    if oil_price > 90:
+if oil_price > 90:
     alerts.append("🚨 Oil price spike detected")
 
-    if delay > 30:
+if delay > 30:
     alerts.append("🚨 Major shipment delay expected")
 
-    if len(alerts) == 0:
+if len(alerts) == 0:
     st.success("✅ No critical alerts")
-    else:
+else:
     for alert in alerts:
         st.error(alert)
 
