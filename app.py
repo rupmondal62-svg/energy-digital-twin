@@ -92,17 +92,33 @@ def generate_ships():
     return pd.DataFrame(ships)
 
 def fetch_news():
-    API_KEY = os.getenv("ALPHA_API_KEY")
+    import os
+    import requests
+
+    API_KEY = os.getenv("NEWS_API_KEY")
+
     if not API_KEY:
         return []
-    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=USO&apikey={API_KEY}"
+
+    url = f"https://newsapi.org/v2/everything?q=oil OR LPG OR energy&sortBy=publishedAt&language=en&apiKey={API_KEY}"
+
     try:
         res = requests.get(url)
         data = res.json()
-        return [{"title": "Market Update", "source": "Alpha"}]
-    except:
-        return []
 
+        articles = []
+
+        for a in data.get("articles", [])[:10]:
+            articles.append({
+                "title": a["title"],
+                "source": a["source"]["name"]
+            })
+
+        return articles
+
+    except Exception as e:
+        print("News API error:", e)
+        return []
 # ---------------- DATA ---------------- #
 df = generate_ships()
 news = fetch_news()
