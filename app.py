@@ -672,7 +672,11 @@ with st.sidebar:
     st.title("⚡ EnerSight AI")
     st.markdown("### Navigation")
 
-    page = st.radio("", ["Dashboard", "Live Map", "News Intelligence", "Data Table", "Trader Intelligence"])
+    page = st.radio(
+    "",
+    ["Dashboard", "Live Map", "News Intelligence", "Data Table", "Trader Intelligence"],
+    key="main_navigation"
+)
 
     if user_role != "pro":
         st.markdown('<div class="qr-box">', unsafe_allow_html=True)
