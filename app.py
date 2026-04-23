@@ -522,24 +522,6 @@ st.set_page_config(layout="wide")
 # ---------------- LOAD LOGIN CONFIG ---------------- #
 with open('config.yaml') as file:
     config = yaml.load(file, Loader=SafeLoader)
-
-# ---------------- AUTH ---------------- #
-authenticator = stauth.Authenticate(
-    config['credentials'],
-    config['cookie']['name'],
-    config['cookie']['key'],
-    config['cookie']['expiry_days']
-)
-
-# SAFE LOGIN
-try:
-    name, authentication_status, username = authenticator.login("Login", "main")
-except TypeError:
-    try:
-        name, authentication_status, username = authenticator.login(location="main")
-    except:
-        name, authentication_status, username = authenticator.login()
-
 # ---------------- LOGIN CONTROL ---------------- #
 if authentication_status is False:
     st.error("❌ Incorrect Username/Password")
@@ -548,11 +530,6 @@ if authentication_status is False:
 elif authentication_status is None:
     st.warning("⚠️ Please enter your login credentials")
     st.stop()
-
-# ---------------- AFTER LOGIN ---------------- #
-authenticator.logout("Logout", "sidebar")
-st.sidebar.success(f"👤 {name}")
-
 # ---------------- HERO ---------------- #
 st.markdown("""
 <div style="
