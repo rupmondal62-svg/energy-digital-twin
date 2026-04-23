@@ -281,6 +281,13 @@ elif page == "Trader Intelligence":
         delay += random.randint(10, 25)
         st.metric("Weather", weather)
         st.metric("Congestion", congestion)
+        # ---------------- COOLDOWN SETUP ---------------- #
+    import time
+
+    COOLDOWN_SECONDS = 300  # 5 minutes
+
+    if "last_alert_time" not in st.session_state:
+        st.session_state.last_alert_time = 0
         # ---------------- ALERT SYSTEM ---------------- #
     st.markdown("## 🔔 Smart Alerts")
 
@@ -304,9 +311,20 @@ elif page == "Trader Intelligence":
 
     
     st.metric("Congestion", congestion)
-    # ---------------- EMAIL ALERT ---------------- #
+    # ---------------- EMAIL WITH COOLDOWN ---------------- #
+    current_time = time.time()
+
     if len(alerts) > 0:
-        send_email_alert("\n".join(alerts))
+        if current_time - st.session_state.last_alert_time > COOLDOWN_SECONDS:
+
+           send_email_alert("\n".join(alerts))
+           st.session_state.last_alert_time = current_time
+
+           st.success("📧 Alert email sent")
+
+        else:
+           remaining = int(COOLDOWN_SECONDS - (current_time - st.session_state.last_alert_time))
+           st.info(f"⏳ Cooldown active: {remaining}s remaining")
     # ---------------- DECISION ---------------- #
     st.markdown("## 🧠 Trading Decision")
 
