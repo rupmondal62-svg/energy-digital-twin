@@ -365,31 +365,31 @@ elif page == "Data Table":
     st.dataframe(df)
     
 elif page == "Trader Intelligence":
-
-    # 🔒 PRO LOCK (important for money)
-    if user_role == "free":
+     oil_price = get_oil_price()
+     # 🔒 PRO LOCK (important for money)
+     if user_role == "free":
         st.warning("🔒 Trader Intelligence is a PRO feature")
         st.stop()
 
-    st.markdown("# 📈 Trader Intelligence")
-    st.markdown("### AI-powered oil & LPG trading signals")
-    # ---------------- SIGNAL CARD ---------------- #
-    st.markdown("## 📊 Market Signal")
+     st.markdown("# 📈 Trader Intelligence")
+     st.markdown("### AI-powered oil & LPG trading signals")
+     # ---------------- SIGNAL CARD ---------------- #
+     st.markdown("## 📊 Market Signal")
 
-    if oil_price > 85:
+     if oil_price > 85:
         st.error("📈 BULLISH — Prices rising")
-    elif oil_price < 75:
+     elif oil_price < 75:
         st.success("📉 BEARISH — Prices falling")
-    else:
+     else:
         st.warning("⚖ SIDEWAYS — No strong trend")
 
-    st.markdown("---")
+     st.markdown("---")
 
 
-    # ---------------- PRICE SECTION ---------------- #
-    import requests
+     # ---------------- PRICE SECTION ---------------- #
+     import requests
 
-    def get_oil_price():
+     def get_oil_price():
         try:
             url = "https://api.oilpriceapi.com/v1/prices/latest"
             headers = {"Authorization": "Token YOUR_API_KEY"}
@@ -399,23 +399,23 @@ elif page == "Trader Intelligence":
         except:
             return 82.5  # fallback
 
-    oil_price = get_oil_price()
+     oil_price = get_oil_price()
 
-    history = get_price_history()
+     history = get_price_history()
 
-    if history is not None:
+     if history is not None:
        st.markdown("## 📉 Oil Price Trend")
        st.line_chart(history.set_index("date")["value"])
 
-    # LPG proxy (you can replace later)
-    lpg_index = oil_price * 6
+     # LPG proxy (you can replace later)
+     lpg_index = oil_price * 6
 
-    col1, col2 = st.columns(2)
+     col1, col2 = st.columns(2)
 
-    col1.metric("🛢 Crude Oil (USD/barrel)", round(oil_price, 2))
-    col2.metric("🔥 LPG Market Index", int(lpg_index))
+     col1.metric("🛢 Crude Oil (USD/barrel)", round(oil_price, 2))
+     col2.metric("🔥 LPG Market Index", int(lpg_index))
 
-    st.markdown("---")
+     st.markdown("---")
 import pandas as pd
 
 def get_price_history():
