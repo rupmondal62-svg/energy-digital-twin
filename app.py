@@ -321,17 +321,24 @@ if len(alerts) > 0:
     else:
         st.warning("⚖ HOLD")
 
-    # ---------------- ALERTS ---------------- #
+    # ALERTS
     st.markdown("## 🔔 Market Alerts")
 
     alerts = []
+
     if oil_price > 90:
         alerts.append("🚨 Oil spike")
+
     if delay > 30:
         alerts.append("🚨 Delay risk")
 
-    if alerts:
-        for a in alerts:
-            st.error(a)
-    else:
-        st.success("No alerts")
+# SHOW ALERTS
+if alerts:
+    for a in alerts:
+        st.error(a)
+else:
+    st.success("No alerts")
+
+# ✅ ADD HERE
+if len(alerts) > 0:
+    send_email_alert("\n".join(alerts))
