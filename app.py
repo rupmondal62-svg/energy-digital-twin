@@ -241,9 +241,9 @@ elif page == "Data Table":
 elif page == "Trader Intelligence":
 
     if user_role == "free":
-    st.warning("🔒 Trader Intelligence is a PRO feature")
+      st.warning("🔒 Trader Intelligence is a PRO feature")
 
-    st.markdown("""
+      st.markdown("""
     ### 🚀 Upgrade to PRO
     - Real-time oil price charts  
     - AI trading signals  
