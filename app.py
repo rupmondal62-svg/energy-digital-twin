@@ -373,6 +373,17 @@ elif page == "Trader Intelligence":
 
     st.markdown("# 📈 Trader Intelligence")
     st.markdown("### AI-powered oil & LPG trading signals")
+    # ---------------- SIGNAL CARD ---------------- #
+    st.markdown("## 📊 Market Signal")
+
+    if oil_price > 85:
+        st.error("📈 BULLISH — Prices rising")
+    elif oil_price < 75:
+        st.success("📉 BEARISH — Prices falling")
+    else:
+        st.warning("⚖ SIDEWAYS — No strong trend")
+
+    st.markdown("---")
 
 
     # ---------------- PRICE SECTION ---------------- #
@@ -423,17 +434,6 @@ def get_price_history():
 
     except:
         return None
-# ---------------- SIGNAL CARD ---------------- #
-st.markdown("## 📊 Market Signal")
-
-if oil_price > 85:
-        st.error("📈 BULLISH — Prices rising")
-elif oil_price < 75:
-        st.success("📉 BEARISH — Prices falling")
-else:
-        st.warning("⚖ SIDEWAYS — No strong trend")
-
-st.markdown("---")
 
 # ---------------- DELAY INTELLIGENCE ---------------- #
 st.markdown("## ⚠ Shipment Risk Intelligence")
