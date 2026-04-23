@@ -8,6 +8,7 @@ import yaml
 from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 from streamlit_autorefresh import st_autorefresh
+import smtplib
 
 # ---------------- CONFIG ---------------- #
 st.set_page_config(layout="wide")
@@ -24,7 +25,6 @@ authenticator = stauth.Authenticate(
     config['cookie']['expiry_days']
 )
 
-# SAFE LOGIN
 try:
     name, authentication_status, username = authenticator.login("Login", "main")
 except TypeError:
@@ -33,7 +33,6 @@ except TypeError:
     except:
         name, authentication_status, username = authenticator.login()
 
-# ---------------- LOGIN CONTROL ---------------- #
 if authentication_status is False:
     st.error("❌ Incorrect Username/Password")
     st.stop()
@@ -42,381 +41,20 @@ elif authentication_status is None:
     st.warning("⚠️ Please enter your login credentials")
     st.stop()
 
-# ---------------- AFTER LOGIN ---------------- #
 authenticator.logout("Logout", "sidebar")
 st.sidebar.success(f"👤 {name}")
 
-# ---------------- HERO ---------------- #
-st.markdown("""
-<div style="
-    background: linear-gradient(135deg,#0f172a,#1e293b);
-    padding:40px;
-    border-radius:20px;
-    color:white;
-    text-align:left;
-">
-    <h1>⚡ EnerSight AI</h1>
-    <h3>Global Energy Intelligence Platform</h3>
-    <p>Track Oil, LPG & Energy Supply Chains in Real-Time</p>
-</div>
-""", unsafe_allow_html=True)
+# ---------------- FUNCTIONS (FIXED POSITION) ---------------- #
 
-# ---------------- FEATURE CARDS ---------------- #
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    st.markdown("""
-    <div class="news-card">
-    <h4>🚢 Ship Tracking</h4>
-    Real-time oil & LPG vessel monitoring
-    </div>
-    """, unsafe_allow_html=True)
-
-with col2:
-    st.markdown("""
-    <div class="news-card">
-    <h4>📊 AI Intelligence</h4>
-    Predict supply chain disruptions
-    </div>
-    """, unsafe_allow_html=True)
-
-with col3:
-    st.markdown("""
-    <div class="news-card">
-    <h4>🌍 Global Data</h4>
-    Energy insights across regions
-    </div>
-    """, unsafe_allow_html=True)
-
-# ---------------- GLOBAL ENERGY VISUAL SECTION ---------------- #
-st.markdown("## 🌍 Global Energy Movement")
-
-st.markdown("""
-Track global movement of Oil, LPG and strategic energy resources across key maritime routes.
-""")
-
-# ---------------- INDIA ENERGY TRUST SECTION ---------------- #
-st.markdown("## 🇮🇳 Energy Infrastructure Intelligence")
-
-st.markdown("""
-Track and analyze energy logistics including:
-
-- Oil Tankers  
-- LPG Distribution  
-- Government Energy Networks  
-- Strategic Supply Chains  
-""")
-
-# ---------------- ROLE SYSTEM ---------------- #
-def check_paid_user(username):
+def get_oil_price():
     try:
-        with open("paid_users.txt", "r") as f:
-            users = f.read().splitlines()
-            return username in users
-    except:
-        return False
-
-if check_paid_user(username):
-    user_role = "pro"
-else:
-    user_role = config['credentials']['usernames'][username].get('role', 'free')
-
-# ---------------- UI ---------------- #
-st.markdown("""
-<style>
-
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-}
-
-.main {
-    background: #f8fafc;
-    color: #0f172a;
-}
-
-section[data-testid="stSidebar"] {
-    background: #ffffff !important;
-    border-right: 1px solid #e2e8f0;
-}
-
-section[data-testid="stSidebar"] * {
-    color: #0f172a !important;
-}
-
-.news-card {
-    padding: 16px;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    margin-bottom: 12px;
-}
-
-.news-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    transition: 0.3s;
-}
-
-.qr-box {
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    padding: 15px;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-.stButton>button {
-    border-radius: 10px;
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-}
-/* Trader cards */
-.metric-card {
-    background: white;
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-}
-</style>
-""", unsafe_allow_html=True)
-
-# ---------------- SIDEBAR ---------------- #
-with st.sidebar:
-    st.title("⚡ EnerSight AI")
-    st.markdown("### Navigation")
-
-    page = st.radio("", ["Dashboard", "Live Map", "News Intelligence", "Data Table", "Trader Intelligence"])
-
-    if user_role != "pro":
-        st.markdown('<div class="qr-box">', unsafe_allow_html=True)
-        st.image("qr.png", width=220)
-        st.markdown("**Scan QR to upgrade**")
-        st.markdown("Pay ₹199 to unlock PRO 🚀")
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        st.markdown("""
-        <div style="color:red;font-weight:bold;margin-top:10px;">
-        ⚠ Limited access – Upgrade required for full data
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown("""
-        <div style="margin-top:20px;padding:15px;background:#ecfdf5;border-radius:10px;border:1px solid #10b981;">
-        ✅ Used by energy analysts & logistics planners<br>
-        📈 Real-time global tracking insights
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown("---")
-
-        st.markdown("""
-        <div style="background: linear-gradient(135deg,#6366f1,#4f46e5);
-        padding:15px;border-radius:12px;color:white;text-align:center;font-weight:bold;">
-        🚀 Unlock PRO Access
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown("""
-        <div style="color:red;font-weight:bold;margin-top:10px;">
-        ⚠ Limited access – Upgrade required for full data
-        </div>
-        """, unsafe_allow_html=True)
-
-        utr = st.text_input("Enter UTR / Transaction ID")
-
-        if st.button("Verify Payment"):
-            if utr:
-                with open("paid_users.txt", "a") as f:
-                    f.write(username + "\n")
-                st.success("Payment recorded! Refresh page in 5 seconds.")
-            else:
-                st.error("Please enter transaction ID")
-
-        st.markdown("### 💎 PRO Benefits")
-        st.markdown("""
-        - Unlimited ship tracking  
-        - Full news intelligence  
-        - Advanced analytics  
-        - Priority updates  
-        """)
-
-# ---------------- HEADER ---------------- #
-st.markdown("# 🌍 EnerSight AI")
-st.markdown("### ⚡ Intelligence Platform")
-
-st_autorefresh(interval=10000, key="refresh")
-
-# ---------------- DATA ---------------- #
-def fetch_news():
-    import os
-    API_KEY = os.getenv("ALPHA_API_KEY")
-    if not API_KEY:
-        return []
-    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=USO&apikey={API_KEY}"
-    try:
-        res = requests.get(url)
+        url = "https://api.oilpriceapi.com/v1/prices/latest"
+        headers = {"Authorization": "Token YOUR_API_KEY"}
+        res = requests.get(url, headers=headers)
         data = res.json()
-        return [{"title": a["title"], "source": a["source"]["name"]} for a in data.get("articles", [])[:5]]
+        return float(data['data']['price'])
     except:
-        return []
-
-def generate_ships():
-    base = [(26,56),(25,57),(24,60),(22,63),(20,66)]
-    ships = []
-    for lat, lon in base:
-        ships.append({
-            "lat": lat,
-            "lon": lon,
-            "type": random.choice(["Oil Tanker","LPG Carrier"])
-        })
-    return pd.DataFrame(ships)
-# ---------------- EMAIL ALERT FUNCTION ---------------- #
-import smtplib
-
-def send_email_alert(message):
-    try:
-        server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.starttls()
-
-        server.login("your_email@gmail.com", "yhbexhyfiouxjvvt")
-
-        server.sendmail(
-            "your_email@gmail.com",
-            "client@email.com",
-            message
-        )
-
-        server.quit()
-
-    except Exception as e:
-        print("Email error:", e)
-df = generate_ships()
-news = fetch_news()
-
-# ---------------- PAGES ---------------- #
-if page == "Dashboard":
-
-    st.markdown("## 📊 Overview")
-
-    col1, col2, col3 = st.columns(3)
-
-    ships_to_show = df if user_role == "pro" else df.head(5)
-    col1.metric("🚢 Ships", len(ships_to_show))
-
-    col2.metric("⚠ Risk", "Medium")
-    col3.metric("📡 Status", "LIVE")
-
-    if user_role == "free":
-        st.warning("🔒 Upgrade to PRO for full access")
-
-elif page == "Live Map":
-
-    st.markdown("## 🌍 Live Map")
-
-    map_df = df if user_role == "pro" else df.head(5)
-
-    st.pydeck_chart(pdk.Deck(
-        layers=[
-            pdk.Layer(
-                "ScatterplotLayer",
-                data=map_df,
-                get_position='[lon, lat]',
-                get_radius=200000,
-                get_color='[255, 100, 0]'
-            )
-        ],
-        initial_view_state=pdk.ViewState(
-            latitude=22,
-            longitude=65,
-            zoom=3
-        )
-    ))
-
-elif page == "News Intelligence":
-
-    st.markdown("## 📰 Energy News")
-
-    if not news:
-        st.info("No news available")
-    else:
-        news_to_show = news if user_role == "pro" else news[:5]
-
-        for i, article in enumerate(news_to_show):
-            if user_role == "free" and i >= 2:
-                st.markdown("""
-                <div class="news-card" style="filter: blur(4px);">
-                🔒 Premium News Locked
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.markdown(f"""
-                <div class="news-card">
-                <b>{article['title']}</b><br>
-                {article['source']}
-                </div>
-                """, unsafe_allow_html=True)
-
-elif page == "Data Table":
-
-    st.markdown("## 📋 Data")
-    st.dataframe(df)
-    
-elif page == "Trader Intelligence":
-     oil_price = get_oil_price()
-     # 🔒 PRO LOCK (important for money)
-     if user_role == "free":
-        st.warning("🔒 Trader Intelligence is a PRO feature")
-        st.stop()
-
-     st.markdown("# 📈 Trader Intelligence")
-     st.markdown("### AI-powered oil & LPG trading signals")
-     # ---------------- SIGNAL CARD ---------------- #
-     st.markdown("## 📊 Market Signal")
-
-     if oil_price > 85:
-        st.error("📈 BULLISH — Prices rising")
-     elif oil_price < 75:
-        st.success("📉 BEARISH — Prices falling")
-     else:
-        st.warning("⚖ SIDEWAYS — No strong trend")
-
-     st.markdown("---")
-
-
-     # ---------------- PRICE SECTION ---------------- #
-     import requests
-
-     def get_oil_price():
-        try:
-            url = "https://api.oilpriceapi.com/v1/prices/latest"
-            headers = {"Authorization": "Token YOUR_API_KEY"}
-            res = requests.get(url, headers=headers)
-            data = res.json()
-            return float(data['data']['price'])
-        except:
-            return 82.5  # fallback
-
-     oil_price = get_oil_price()
-
-     history = get_price_history()
-
-     if history is not None:
-       st.markdown("## 📉 Oil Price Trend")
-       st.line_chart(history.set_index("date")["value"])
-
-     # LPG proxy (you can replace later)
-     lpg_index = oil_price * 6
-
-     col1, col2 = st.columns(2)
-
-     col1.metric("🛢 Crude Oil (USD/barrel)", round(oil_price, 2))
-     col2.metric("🔥 LPG Market Index", int(lpg_index))
-
-     st.markdown("---")
-import pandas as pd
+        return 82.5
 
 def get_price_history():
     try:
@@ -428,63 +66,148 @@ def get_price_history():
         df = pd.DataFrame(data["data"])
         df["date"] = pd.to_datetime(df["date"])
         df["value"] = df["value"].astype(float)
-
-        df = df.sort_values("date")
-        return df
-
+        return df.sort_values("date")
     except:
         return None
 
-# ---------------- DELAY INTELLIGENCE ---------------- #
-st.markdown("## ⚠ Shipment Risk Intelligence")
+def send_email_alert(message):
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login("your_email@gmail.com", "APP_PASSWORD")
+        server.sendmail("your_email@gmail.com", "client@email.com", message)
+        server.quit()
+    except Exception as e:
+        print("Email error:", e)
 
-import random
+def generate_ships():
+    base = [(26,56),(25,57),(24,60),(22,63),(20,66)]
+    ships = []
+    for lat, lon in base:
+        ships.append({
+            "lat": lat,
+            "lon": lon,
+            "type": random.choice(["Oil Tanker","LPG Carrier"])
+        })
+    return pd.DataFrame(ships)
 
-weather = random.choice(["Calm", "Rough"])
-congestion = random.choice(["Low", "High"])
+def fetch_news():
+    API_KEY = os.getenv("ALPHA_API_KEY")
+    if not API_KEY:
+        return []
+    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=USO&apikey={API_KEY}"
+    try:
+        res = requests.get(url)
+        data = res.json()
+        return [{"title": "Market Update", "source": "Alpha"}]
+    except:
+        return []
 
-delay = 0
-if weather == "Rough":
+# ---------------- DATA ---------------- #
+df = generate_ships()
+news = fetch_news()
+
+# ---------------- ROLE SYSTEM ---------------- #
+def check_paid_user(username):
+    try:
+        with open("paid_users.txt", "r") as f:
+            return username in f.read().splitlines()
+    except:
+        return False
+
+user_role = "pro" if check_paid_user(username) else config['credentials']['usernames'][username].get('role', 'free')
+
+# ---------------- SIDEBAR ---------------- #
+with st.sidebar:
+    st.title("⚡ EnerSight AI")
+    page = st.radio("", ["Dashboard", "Live Map", "News Intelligence", "Data Table", "Trader Intelligence"])
+
+# ---------------- HEADER ---------------- #
+st.markdown("# 🌍 EnerSight AI")
+st.markdown("### ⚡ Intelligence Platform")
+
+st_autorefresh(interval=10000, key="refresh")
+
+# ---------------- PAGES ---------------- #
+
+if page == "Dashboard":
+    st.markdown("## 📊 Overview")
+    col1, col2, col3 = st.columns(3)
+    col1.metric("🚢 Ships", len(df))
+    col2.metric("⚠ Risk", "Medium")
+    col3.metric("📡 Status", "LIVE")
+
+elif page == "Live Map":
+    st.markdown("## 🌍 Live Map")
+
+elif page == "News Intelligence":
+    st.markdown("## 📰 Energy News")
+
+elif page == "Data Table":
+    st.markdown("## 📋 Data")
+    st.dataframe(df)
+
+elif page == "Trader Intelligence":
+
+    if user_role == "free":
+        st.warning("🔒 Trader Intelligence is a PRO feature")
+        st.stop()
+
+    st.markdown("# 📈 Trader Intelligence")
+
+    oil_price = get_oil_price()
+
+    # ---------------- SIGNAL ---------------- #
+    st.markdown("## 📊 Market Signal")
+
+    if oil_price > 85:
+        st.error("📈 BULLISH — Prices rising")
+    elif oil_price < 75:
+        st.success("📉 BEARISH — Prices falling")
+    else:
+        st.warning("⚖ SIDEWAYS")
+
+    st.markdown("---")
+
+    # ---------------- CHART ---------------- #
+    history = get_price_history()
+    if history is not None:
+        st.line_chart(history.set_index("date")["value"])
+
+    # ---------------- DELAY ---------------- #
+    weather = random.choice(["Calm", "Rough"])
+    congestion = random.choice(["Low", "High"])
+
+    delay = 0
+    if weather == "Rough":
         delay += random.randint(10, 30)
-if congestion == "High":
+    if congestion == "High":
         delay += random.randint(10, 25)
 
-col3, col4 = st.columns(2)
+    st.metric("Weather", weather)
+    st.metric("Congestion", congestion)
 
-col3.metric("🌊 Weather", weather)
-col4.metric("🚢 Congestion", congestion)
+    # ---------------- DECISION ---------------- #
+    st.markdown("## 🧠 Trading Decision")
 
-if delay > 30:
-        st.error(f"🚨 HIGH RISK — Delay {delay} hrs")
-elif delay > 15:
-        st.warning(f"⚠ Moderate Risk — Delay {delay} hrs")
-else:
-        st.success("✅ Low Risk")
+    if oil_price > 85 and delay > 20:
+        st.error("🔥 STRONG BUY")
+    elif oil_price < 75 and delay < 10:
+        st.success("💧 SELL")
+    else:
+        st.warning("⚖ HOLD")
 
-st.markdown("---")
+    # ---------------- ALERTS ---------------- #
+    st.markdown("## 🔔 Market Alerts")
 
-# ---------------- FINAL DECISION ---------------- #
-st.markdown("## 🧠 Trading Decision")
+    alerts = []
+    if oil_price > 90:
+        alerts.append("🚨 Oil spike")
+    if delay > 30:
+        alerts.append("🚨 Delay risk")
 
-if oil_price > 85 and delay > 20:
-    st.error("🔥 STRONG BUY — Supply disruption expected")
-elif oil_price < 75 and delay < 10:
-    st.success("💧 SELL — Stable supply")
-else:
-    st.warning("⚖ HOLD — Wait for clearer signal")
-# ---------------- ALERT SYSTEM ---------------- #
-st.markdown("## 🔔 Market Alerts")
-
-alerts = []
-
-if oil_price > 90:
-    alerts.append("🚨 Oil price spike detected")
-
-if delay > 30:
-    alerts.append("🚨 Major shipment delay expected")
-
-if len(alerts) == 0:
-    st.success("✅ No critical alerts")
-else:
-    for alert in alerts:
-        st.error(alert)
+    if alerts:
+        for a in alerts:
+            st.error(a)
+    else:
+        st.success("No alerts")
