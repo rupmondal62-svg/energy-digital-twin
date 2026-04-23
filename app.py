@@ -550,20 +550,6 @@ if history is not None:
     else:
         st.success("📉 Stable Market")
     st.markdown("## 🔔 Market Alerts")
-
-alerts = []
-
-if oil_price > 90:
-    alerts.append("🚨 Oil price spike detected")
-
-if delay > 30:
-    alerts.append("🚨 Major shipment delay expected")
-
-if len(alerts) == 0:
-    st.success("✅ No critical alerts")
-else:
-    for alert in alerts:
-        st.error(alert)
 # ---------------- FINAL DECISION ---------------- #
     st.markdown("## 🧠 Trading Decision")
 
@@ -573,24 +559,6 @@ elif oil_price < 75 and delay < 10:
     st.success("💧 SELL — Stable supply")
 else:
     st.warning("⚖ HOLD — Wait for clearer signal")
-
-# ✅ ADD HERE (THIS IS THE FIX)
-# ---------------- ALERT SYSTEM ---------------- #
-st.markdown("## 🔔 Market Alerts")
-
-alerts = []
-
-if oil_price > 90:
-    alerts.append("🚨 Oil price spike detected")
-
-if delay > 30:
-    alerts.append("🚨 Major shipment delay expected")
-
-if len(alerts) == 0:
-    st.success("✅ No critical alerts")
-else:
-    for alert in alerts:
-        st.error(alert)
 
     # ---------------- DELAY ---------------- #
     st.markdown("### ⚠ Shipment Risk")
@@ -612,3 +580,21 @@ else:
         st.success("💧 SELL SIGNAL")
     else:
         st.warning("⚖ HOLD POSITION")
+        alerts = []
+        # ---------------- ALERT SYSTEM ---------------- #
+st.markdown("## 🔔 Market Alerts")
+
+alerts = []
+
+if oil_price > 90:
+    alerts.append("🚨 Oil price spike detected")
+
+if delay > 30:
+    alerts.append("🚨 Major shipment delay expected")
+
+if len(alerts) == 0:
+    st.success("✅ No critical alerts")
+else:
+    for alert in alerts:
+        st.error(alert)
+
