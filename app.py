@@ -276,28 +276,28 @@ elif page == "Trader Intelligence":
     if history is not None:
         st.line_chart(history.set_index("date")["value"])
     # ---------------- ALERT SYSTEM ---------------- #
-st.markdown("## 🔔 Smart Alerts")
+    st.markdown("## 🔔 Smart Alerts")
 
-alerts = []
+    alerts = []
 
-if oil_price > 90:
-    alerts.append("🚨 Oil breakout above $90")
+    if oil_price > 90:
+        alerts.append("🚨 Oil breakout above $90")
 
-if oil_price < 70:
-    alerts.append("📉 Oil crash below $70")
+    if oil_price < 70:
+        alerts.append("📉 Oil crash below $70")
 
-if delay > 30:
-    alerts.append("🚢 Major shipment delay risk")
+    if delay > 30:
+        alerts.append("🚢 Major shipment delay risk")
 
 # Display alerts
-if len(alerts) == 0:
-    st.success("✅ No critical alerts")
-else:
-    for alert in alerts:
+    if len(alerts) == 0:
+       st.success("✅ No critical alerts")
+    else:
+     for alert in alerts:
         st.error(alert)
-# ---------------- EMAIL ALERT ---------------- #
-if len(alerts) > 0:
-    send_email_alert("\n".join(alerts))
+    # ---------------- EMAIL ALERT ---------------- #
+    if len(alerts) > 0:
+        send_email_alert("\n".join(alerts))
     # ---------------- DELAY ---------------- #
     weather = random.choice(["Calm", "Rough"])
     congestion = random.choice(["Low", "High"])
