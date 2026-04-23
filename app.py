@@ -273,7 +273,6 @@ def generate_ships():
             "type": random.choice(["Oil Tanker","LPG Carrier"])
         })
     return pd.DataFrame(ships)
-import requests
 # ---------------- EMAIL ALERT FUNCTION ---------------- #
 import smtplib
 
@@ -294,19 +293,6 @@ def send_email_alert(message):
 
     except Exception as e:
         print("Email error:", e)
-def get_oil_price():
-    try:
-        API_KEY = "YOUR_API_KEY"
-
-        url = f"https://www.alphavantage.co/query?function=WTI&interval=daily&apikey={API_KEY}"
-        res = requests.get(url)
-        data = res.json()
-
-        latest = list(data["data"])[0]
-        return float(latest["value"])
-
-    except:
-        return 82.5  # fallback
 df = generate_ships()
 news = fetch_news()
 
@@ -377,6 +363,7 @@ elif page == "Data Table":
 
     st.markdown("## 📋 Data")
     st.dataframe(df)
+    
 elif page == "Trader Intelligence":
 
     # 🔒 PRO LOCK (important for money)
@@ -386,6 +373,7 @@ elif page == "Trader Intelligence":
 
     st.markdown("# 📈 Trader Intelligence")
     st.markdown("### AI-powered oil & LPG trading signals")
+
 
     # ---------------- PRICE SECTION ---------------- #
     import requests
@@ -401,6 +389,12 @@ elif page == "Trader Intelligence":
             return 82.5  # fallback
 
     oil_price = get_oil_price()
+
+    history = get_price_history()
+
+    if history is not None:
+       st.markdown("## 📉 Oil Price Trend")
+       st.line_chart(history.set_index("date")["value"])
 
     # LPG proxy (you can replace later)
     lpg_index = oil_price * 6
@@ -429,140 +423,56 @@ def get_price_history():
 
     except:
         return None
+# ---------------- SIGNAL CARD ---------------- #
+st.markdown("## 📊 Market Signal")
 
-history = get_price_history()
-
-if history is not None:
-    st.markdown("## 📉 Oil Price Trend")
-    st.line_chart(history.set_index("date")["value"])
-    # ---------------- SIGNAL CARD ---------------- #
-    st.markdown("## 📊 Market Signal")
-
-    if oil_price > 85:
+if oil_price > 85:
         st.error("📈 BULLISH — Prices rising")
-    elif oil_price < 75:
+elif oil_price < 75:
         st.success("📉 BEARISH — Prices falling")
-    else:
+else:
         st.warning("⚖ SIDEWAYS — No strong trend")
 
-    st.markdown("---")
+st.markdown("---")
 
-    # ---------------- DELAY INTELLIGENCE ---------------- #
-    st.markdown("## ⚠ Shipment Risk Intelligence")
+# ---------------- DELAY INTELLIGENCE ---------------- #
+st.markdown("## ⚠ Shipment Risk Intelligence")
 
-    import random
+import random
 
-    weather = random.choice(["Calm", "Rough"])
-    congestion = random.choice(["Low", "High"])
+weather = random.choice(["Calm", "Rough"])
+congestion = random.choice(["Low", "High"])
 
-    delay = 0
-    if weather == "Rough":
+delay = 0
+if weather == "Rough":
         delay += random.randint(10, 30)
-    if congestion == "High":
+if congestion == "High":
         delay += random.randint(10, 25)
 
-    col3, col4 = st.columns(2)
+col3, col4 = st.columns(2)
 
-    col3.metric("🌊 Weather", weather)
-    col4.metric("🚢 Congestion", congestion)
+col3.metric("🌊 Weather", weather)
+col4.metric("🚢 Congestion", congestion)
 
-    if delay > 30:
+if delay > 30:
         st.error(f"🚨 HIGH RISK — Delay {delay} hrs")
-    elif delay > 15:
+elif delay > 15:
         st.warning(f"⚠ Moderate Risk — Delay {delay} hrs")
-    else:
+else:
         st.success("✅ Low Risk")
 
-    st.markdown("---")
+st.markdown("---")
 
-    # ---------------- FINAL DECISION ---------------- #
-    st.markdown("## 🧠 Trading Decision")
+# ---------------- FINAL DECISION ---------------- #
+st.markdown("## 🧠 Trading Decision")
 
-    if oil_price > 85 and delay > 20:
+if oil_price > 85 and delay > 20:
         st.error("🔥 STRONG BUY — Supply disruption expected")
-    elif oil_price < 75 and delay < 10:
+elif oil_price < 75 and delay < 10:
         st.success("💧 SELL — Stable supply")
-    else:
+else:
         st.warning("⚖ HOLD — Wait for clearer signal")
-
-    # ---------------- PRICE SECTION ---------------- #
-    import random
-
-    oil_price = random.randint(70, 95)
-    lpg_price = random.randint(400, 700)
-
-    col1, col2 = st.columns(2)
-
-    col1.metric("🛢 Oil Price (USD)", oil_price)
-    col2.metric("🔥 LPG Index", lpg_price)
-
-    # ---------------- SIGNAL ---------------- #
-    st.markdown("### 📊 Market Signal")
-
-    if oil_price > 85:
-        st.error("📈 Bullish Market (Prices Rising)")
-    else:
-        st.success("📉 Stable Market")
-    st.markdown("## 🔔 Market Alerts")
-
-    # ---------------- DELAY INTELLIGENCE ---------------- #
-    st.markdown("## ⚠ Shipment Risk Intelligence")
-
-    import random
-
-    weather = random.choice(["Calm", "Rough"])
-    congestion = random.choice(["Low", "High"])
-
-    delay = 0
-    if weather == "Rough":
-        delay += random.randint(10, 30)
-    if congestion == "High":
-        delay += random.randint(10, 25)
-
-    col3, col4 = st.columns(2)
-
-    col3.metric("🌊 Weather", weather)
-    col4.metric("🚢 Congestion", congestion)
-
-    if delay > 30:
-        st.error(f"🚨 HIGH RISK — Delay {delay} hrs")
-    elif delay > 15:
-        st.warning(f"⚠ Moderate Risk — Delay {delay} hrs")
-    else:
-        st.success("✅ Low Risk")
-
-    st.markdown("---")
-
-    # ---------------- FINAL DECISION ---------------- #
-    st.markdown("## 🧠 Trading Decision")
-
-    if oil_price > 85 and delay > 20:
-        st.error("🔥 STRONG BUY — Supply disruption expected")
-    elif oil_price < 75 and delay < 10:
-        st.success("💧 SELL — Stable supply")
-    else:
-        st.warning("⚖ HOLD — Wait for clearer signal")
-    # ---------------- SIGNAL ---------------- #
-    st.markdown("### 📊 Market Signal")
-
-    if oil_price > 85:
-        st.error("📈 Bullish Market (Prices Rising)")
-    else:
-        st.success("📉 Stable Market")
-    st.markdown("## 🔔 Market Alerts")
-
-
-    # ---------------- DELAY ---------------- #
-    st.markdown("### ⚠ Shipment Risk")
-
-    st.write(f"🌊 Weather: {weather}")
-    st.write(f"🚢 Congestion: {congestion}")
-
-    if delay > 25:
-        st.error(f"🚨 High Delay Risk ({delay} hrs)")
-    else:
-        st.success("✅ No major delay")
-        # ---------------- ALERT SYSTEM ---------------- #
+# ---------------- ALERT SYSTEM ---------------- #
 st.markdown("## 🔔 Market Alerts")
 
 alerts = []
@@ -578,4 +488,3 @@ if len(alerts) == 0:
 else:
     for alert in alerts:
         st.error(alert)
-
