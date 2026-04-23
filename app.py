@@ -550,15 +550,7 @@ if history is not None:
     else:
         st.success("📉 Stable Market")
     st.markdown("## 🔔 Market Alerts")
-# ---------------- FINAL DECISION ---------------- #
-    st.markdown("## 🧠 Trading Decision")
 
-if oil_price > 85 and delay > 20:
-    st.error("🔥 STRONG BUY — Supply disruption expected")
-elif oil_price < 75 and delay < 10:
-    st.success("💧 SELL — Stable supply")
-else:
-    st.warning("⚖ HOLD — Wait for clearer signal")
 
     # ---------------- DELAY ---------------- #
     st.markdown("### ⚠ Shipment Risk")
@@ -570,17 +562,6 @@ else:
         st.error(f"🚨 High Delay Risk ({delay} hrs)")
     else:
         st.success("✅ No major delay")
-
-    # ---------------- FINAL DECISION ---------------- #
-    st.markdown("### 🧠 Trading Decision")
-
-    if oil_price > 85 and delay > 20:
-        st.error("🔥 STRONG BUY SIGNAL")
-    elif oil_price < 75 and delay < 10:
-        st.success("💧 SELL SIGNAL")
-    else:
-        st.warning("⚖ HOLD POSITION")
-        alerts = []
         # ---------------- ALERT SYSTEM ---------------- #
 st.markdown("## 🔔 Market Alerts")
 
