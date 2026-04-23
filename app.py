@@ -270,9 +270,6 @@ elif page == "Trader Intelligence":
     if history is not None:
         st.markdown("## 📉 Oil Price Trend")
         st.line_chart(history.set_index("date")["value"])
-    # ---------------- EMAIL ALERT ---------------- #
-    if len(alerts) > 0:
-        send_email_alert("\n".join(alerts))
     # ---------------- DELAY ---------------- #
     weather = random.choice(["Calm", "Rough"])
     congestion = random.choice(["Low", "High"])
@@ -307,7 +304,9 @@ elif page == "Trader Intelligence":
 
     
     st.metric("Congestion", congestion)
-
+    # ---------------- EMAIL ALERT ---------------- #
+    if len(alerts) > 0:
+        send_email_alert("\n".join(alerts))
     # ---------------- DECISION ---------------- #
     st.markdown("## 🧠 Trading Decision")
 
