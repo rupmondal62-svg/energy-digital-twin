@@ -171,7 +171,8 @@ elif page == "Trader Intelligence":
     if market == "Crude Oil (WTI)":
         symbol = "WTI"
     elif market == "Brent Oil":
-        symbol = "BRENT"
+        symbol = "WTI"   # fallback
+        st.warning("⚠ Brent not available in free API — showing WTI proxy")
     elif market == "Natural Gas":
         symbol = "NG"
 
