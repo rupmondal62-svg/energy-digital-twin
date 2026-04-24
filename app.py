@@ -8,11 +8,41 @@ import yaml
 import time
 import smtplib
 import plotly.graph_objects as go
-
 from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 from streamlit_autorefresh import st_autorefresh
+import streamlit as st
+import pandas as pd
+import requests
 
+# ================= REAL-TIME API FUNCTION ================= #
+
+def get_realtime_price(symbol="USO"):
+    API_KEY = st.secrets["TWELVE_API_KEY"]
+
+    url = f"https://api.twelvedata.com/time_series?symbol={symbol}&interval=5min&outputsize=100&apikey={API_KEY}"
+
+    try:
+        res = requests.get(url)
+        data = res.json()
+
+        if "values" not in data:
+            st.write("API RESPONSE:", data)
+            return None
+
+        df = pd.DataFrame(data["values"])
+
+        df["datetime"] = pd.to_datetime(df["datetime"])
+        df = df.sort_values("datetime")
+
+        for col in ["open", "high", "low", "close"]:
+            df[col] = df[col].astype(float)
+
+        return df
+
+    except Exception as e:
+        st.write("ERROR:", e)
+        return None
 # ---------------- CONFIG ---------------- #
 st.set_page_config(layout="wide")
 
@@ -169,8 +199,19 @@ elif page == "Trader Intelligence":
         st.stop()
 
     st.markdown("## 📊 Market Signal")
+    st.markdown("### 🛢 Select Market")
 
-    history = get_intraday_price("USO")
+    market = st.selectbox(
+    "Choose asset",
+    ["Crude Oil (WTI)", "Brent Oil", "Natural Gas"]
+    )
+if market == "Crude Oil (WTI)":
+    symbol = "CL1"
+elif market == "Brent Oil":
+    symbol = "BRN"
+elif market == "Natural Gas":
+    symbol = "NG"
+    history = get_realtime_price(symbol)
 
     if history is None:
         st.error("API issue")
@@ -193,7 +234,7 @@ elif page == "Trader Intelligence":
     history["MA"] = history["close"].rolling(5).mean()
     history["RSI"] = calculate_rsi(history["close"])
 
-    st.line_chart(history.set_index("date")[["close", "MA"]])
+    st.line_chart(history.set_index("datetime")[["close", "MA"]])
 
     st.metric("Current Price", round(latest, 2))
     st.metric("RSI", round(history["RSI"].iloc[-1], 2))
