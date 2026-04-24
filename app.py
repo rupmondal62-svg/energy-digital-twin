@@ -11,9 +11,7 @@ import plotly.graph_objects as go
 from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 from streamlit_autorefresh import st_autorefresh
-import streamlit as st
-import pandas as pd
-import requests
+
 
 # ================= REAL-TIME API FUNCTION ================= #
 
@@ -75,7 +73,7 @@ st.sidebar.success(f"👤 {name}")
 
 def get_oil_price():
     try:
-        return get_intraday_price("USO")["close"].iloc[-1]
+        return get_realtime_price("CL1")["close"].iloc[-1]
     except:
         return 82.5
 
@@ -170,23 +168,24 @@ elif page == "Trader Intelligence":
     "Choose asset",
     ["Crude Oil (WTI)", "Brent Oil", "Natural Gas"]
     )
-if market == "Crude Oil (WTI)":
-    symbol = "CL1"
-elif market == "Brent Oil":
-    symbol = "BRN"
-elif market == "Natural Gas":
-    symbol = "NG"
+    if market == "Crude Oil (WTI)":
+        symbol = "CL1:NYMEX"
+    elif market == "Brent Oil":
+        symbol = "BRN:ICE"
+    elif market == "Natural Gas":
+        symbol = "NG:NYMEX"
+
     history = get_realtime_price(symbol)
 
     if history is None:
-        st.error("API issue")
+        st.error("⚠ API failed or limit reached")
         st.stop()
 
     latest = history["close"].iloc[-1]
 
     # ---------------- CANDLESTICK ---------------- #
     fig = go.Figure(data=[go.Candlestick(
-        x=history['date'],
+        x=history['datetime'],
         open=history['open'],
         high=history['high'],
         low=history['low'],
