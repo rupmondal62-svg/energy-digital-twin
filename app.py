@@ -9,6 +9,7 @@ from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 from streamlit_autorefresh import st_autorefresh
 import smtplib
+import time
 
 # ---------------- CONFIG ---------------- #
 st.set_page_config(layout="wide")
@@ -27,16 +28,12 @@ authenticator = stauth.Authenticate(
 
 try:
     name, authentication_status, username = authenticator.login("Login", "main")
-except TypeError:
-    try:
-        name, authentication_status, username = authenticator.login(location="main")
-    except:
-        name, authentication_status, username = authenticator.login()
+except:
+    name, authentication_status, username = authenticator.login()
 
 if authentication_status is False:
     st.error("❌ Incorrect Username/Password")
     st.stop()
-
 elif authentication_status is None:
     st.warning("⚠️ Please enter your login credentials")
     st.stop()
@@ -44,21 +41,17 @@ elif authentication_status is None:
 authenticator.logout("Logout", "sidebar")
 st.sidebar.success(f"👤 {name}")
 
-# ---------------- FUNCTIONS (FIXED POSITION) ---------------- #
-def get_price_history():
-    import requests
-    import pandas as pd
-    import os
+# ---------------- FUNCTIONS ---------------- #
 
+def get_intraday_price(symbol="USO"):
     API_KEY = os.getenv("ALPHA_API_KEY")
 
-    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=USO&apikey={API_KEY}"
+    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=5min&apikey={API_KEY}"
 
     try:
         res = requests.get(url)
         data = res.json()
-
-        ts = data["Time Series (Daily)"]
+        ts = data["Time Series (5min)"]
 
         df = pd.DataFrame([
             {"date": k, "value": float(v["4. close"])}
@@ -69,9 +62,9 @@ def get_price_history():
         df = df.sort_values("date")
 
         return df
-
     except:
         return None
+
 def get_oil_price():
     try:
         url = "https://api.oilpriceapi.com/v1/prices/latest"
@@ -82,20 +75,6 @@ def get_oil_price():
     except:
         return 82.5
 
-def get_price_history():
-    try:
-        API_KEY = "YOUR_API_KEY"
-        url = f"https://www.alphavantage.co/query?function=WTI&interval=daily&apikey={API_KEY}"
-        res = requests.get(url)
-        data = res.json()
-
-        df = pd.DataFrame(data["data"])
-        df["date"] = pd.to_datetime(df["date"])
-        df["value"] = df["value"].astype(float)
-        return df.sort_values("date")
-    except:
-        return None
-
 def send_email_alert(message):
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)
@@ -103,8 +82,8 @@ def send_email_alert(message):
         server.login("your_email@gmail.com", "APP_PASSWORD")
         server.sendmail("your_email@gmail.com", "client@email.com", message)
         server.quit()
-    except Exception as e:
-        print("Email error:", e)
+    except:
+        pass
 
 def generate_ships():
     base = [(26,56),(25,57),(24,60),(22,63),(20,66)]
@@ -117,39 +96,10 @@ def generate_ships():
         })
     return pd.DataFrame(ships)
 
-def fetch_news():
-    import os
-    import requests
-
-    API_KEY = os.getenv("NEWS_API_KEY")
-
-    if not API_KEY:
-        return []
-
-    url = f"https://newsapi.org/v2/everything?q=oil OR LPG OR energy&sortBy=publishedAt&language=en&apiKey={API_KEY}"
-
-    try:
-        res = requests.get(url)
-        data = res.json()
-
-        articles = []
-
-        for a in data.get("articles", [])[:10]:
-            articles.append({
-                "title": a["title"],
-                "source": a["source"]["name"]
-            })
-
-        return articles
-
-    except Exception as e:
-        print("News API error:", e)
-        return []
 # ---------------- DATA ---------------- #
 df = generate_ships()
-news = fetch_news()
 
-# ---------------- ROLE SYSTEM ---------------- #
+# ---------------- ROLE ---------------- #
 def check_paid_user(username):
     try:
         with open("paid_users.txt", "r") as f:
@@ -157,12 +107,12 @@ def check_paid_user(username):
     except:
         return False
 
-user_role = "pro" if check_paid_user(username) else config['credentials']['usernames'][username].get('role', 'free')
+user_role = "pro" if check_paid_user(username) else "free"
 
 # ---------------- SIDEBAR ---------------- #
 with st.sidebar:
     st.title("⚡ EnerSight AI")
-    page = st.radio("", ["Dashboard", "Live Map", "News Intelligence", "Data Table", "Trader Intelligence"])
+    page = st.radio("", ["Dashboard", "Live Map", "Trader Intelligence"])
 
 # ---------------- HEADER ---------------- #
 st.markdown("# 🌍 EnerSight AI")
@@ -173,31 +123,19 @@ st_autorefresh(interval=10000, key="refresh")
 # ---------------- PAGES ---------------- #
 
 if page == "Dashboard":
-
     st.markdown("## 📊 Overview")
-
     col1, col2, col3 = st.columns(3)
-
-    ships_to_show = df if user_role == "pro" else df.head(5)
-
-    col1.metric("🚢 Ships", len(ships_to_show))
+    col1.metric("🚢 Ships", len(df))
     col2.metric("⚠ Risk", "Medium")
     col3.metric("📡 Status", "LIVE")
 
-    if user_role == "free":
-        st.warning("🔒 Upgrade to PRO for full access")
-
 elif page == "Live Map":
-
     st.markdown("## 🌍 Live Map")
-
-    map_df = df if user_role == "pro" else df.head(5)
-
     st.pydeck_chart(pdk.Deck(
         layers=[
             pdk.Layer(
                 "ScatterplotLayer",
-                data=map_df,
+                data=df,
                 get_position='[lon, lat]',
                 get_radius=200000,
                 get_color='[255, 100, 0]'
@@ -210,93 +148,42 @@ elif page == "Live Map":
         )
     ))
 
-elif page == "News Intelligence":
-
-    st.markdown("## 📰 Energy News")
-
-    if not news:
-        st.info("No news available")
-    else:
-        news_to_show = news if user_role == "pro" else news[:5]
-
-        for i, article in enumerate(news_to_show):
-            if user_role == "free" and i >= 2:
-                st.markdown("""
-                <div class="news-card" style="filter: blur(4px);">
-                🔒 Premium News Locked
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.markdown(f"""
-                <div class="news-card">
-                <b>{article['title']}</b><br>
-                {article['source']}
-                </div>
-                """, unsafe_allow_html=True)
-
-elif page == "Data Table":
-    st.markdown("## 📋 Data")
-    st.dataframe(df)
-
 elif page == "Trader Intelligence":
-    if user_role == "free":
-        st.warning("🔒 Trader Intelligence is a PRO feature")
 
-        st.markdown("""
-        ### 🚀 Upgrade to PRO
-        - Real-time oil price charts  
-        - AI trading signals  
-        - Smart alerts (Email + Delay)  
-        - Unlimited data access  
-        """)
-
-        st.stop()
     oil_price = get_oil_price()
 
-    # ---------------- SIGNAL ---------------- #
+    # SIGNAL
     st.markdown("## 📊 Market Signal")
-
     if oil_price > 85:
-        st.error("📈 BULLISH — Prices rising")
+        st.error("📈 BULLISH")
     elif oil_price < 75:
-        st.success("📉 BEARISH — Prices falling")
+        st.success("📉 BEARISH")
     else:
         st.warning("⚖ SIDEWAYS")
+
     st.markdown("---")
-    # ---------------- LIVE MARKET CHARTS ---------------- #
 
-    st.markdown("## 📈 Live Oil Market")
+    # CHART
+    history = get_intraday_price("USO")
 
-    history = get_intraday_price("USO")  # Oil proxy
-
-if history is not None:
-        # 🔥 ADD MOVING AVERAGE HERE
+    if history is not None:
         history["MA"] = history["value"].rolling(5).mean()
 
-        # ✅ SHOW BOTH LINES
         st.line_chart(history.set_index("date")[["value", "MA"]])
-        st.line_chart(history.set_index("date")["value"])
-        st.metric("Current Oil Price", round(latest, 2))
-        # ✅ ADD AI PREDICTION HERE (STEP-3)
-        st.markdown("## 🧠 AI Trend Prediction")
 
         latest = history["value"].iloc[-1]
         previous = history["value"].iloc[-5]
 
+        st.metric("Current Price", round(latest, 2))
+
         if latest > previous:
-            st.success("📈 Uptrend detected (Bullish)")
+            st.success("📈 Uptrend")
         elif latest < previous:
-            st.error("📉 Downtrend detected (Bearish)")
+            st.error("📉 Downtrend")
         else:
-            st.warning("⚖ Sideways market")
+            st.warning("⚖ Sideways")
 
-st.markdown("## 🔥 Live Gas Market")
-
-gas = get_intraday_price("UNG")  # Gas proxy
-
-if gas is not None:
-    st.line_chart(gas.set_index("date")["value"])
-    # ---------------- DELAY ---------------- #
+    # DELAY
     weather = random.choice(["Calm", "Rough"])
     congestion = random.choice(["Low", "High"])
 
@@ -305,79 +192,38 @@ if gas is not None:
         delay += random.randint(10, 30)
     if congestion == "High":
         delay += random.randint(10, 25)
-        st.metric("Weather", weather)
-        st.metric("Congestion", congestion)
 
-    def get_intraday_price(symbol="USO"):
-        API_KEY = os.getenv("ALPHA_API_KEY")
+    st.metric("Weather", weather)
+    st.metric("Congestion", congestion)
 
-        url = f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=5min&apikey={API_KEY}"
-
-        try:
-            res = requests.get(url)
-            data = res.json()
-
-            ts = data["Time Series (5min)"]
-
-            df = pd.DataFrame([
-            {"date": k, "value": float(v["4. close"])}
-            for k, v in ts.items()
-            ])
-
-            df["date"] = pd.to_datetime(df["date"])
-            df = df.sort_values("date")
-
-            return df
-
-        except:
-            return None
-    
-        # ---------------- COOLDOWN SETUP ---------------- #
-    import time
-
-    COOLDOWN_SECONDS = 300  # 5 minutes
-
-    if "last_alert_time" not in st.session_state:
-        st.session_state.last_alert_time = 0
-        # ---------------- ALERT SYSTEM ---------------- #
-    st.markdown("## 🔔 Smart Alerts")
-
+    # ALERTS
     alerts = []
 
     if oil_price > 90:
-        alerts.append("🚨 Oil breakout above $90")
-
-    if oil_price < 70:
-        alerts.append("📉 Oil crash below $70")
+        alerts.append("🚨 Oil breakout")
 
     if delay > 30:
-        alerts.append("🚢 Major shipment delay risk")
+        alerts.append("🚢 Delay risk")
 
-# Display alerts
-    if len(alerts) == 0:
-       st.success("✅ No critical alerts")
+    if alerts:
+        for a in alerts:
+            st.error(a)
     else:
-     for alert in alerts:
-        st.error(alert)
+        st.success("No alerts")
 
-    
-    st.metric("Congestion", congestion)
-    # ---------------- EMAIL WITH COOLDOWN ---------------- #
+    # EMAIL COOLDOWN
+    if "last_alert_time" not in st.session_state:
+        st.session_state.last_alert_time = 0
+
     current_time = time.time()
 
-    if len(alerts) > 0:
-        if current_time - st.session_state.last_alert_time > COOLDOWN_SECONDS:
+    if alerts and current_time - st.session_state.last_alert_time > 300:
+        send_email_alert("\n".join(alerts))
+        st.session_state.last_alert_time = current_time
+        st.success("📧 Email sent")
 
-           send_email_alert("\n".join(alerts))
-           st.session_state.last_alert_time = current_time
-
-           st.success("📧 Alert email sent")
-
-        else:
-           remaining = int(COOLDOWN_SECONDS - (current_time - st.session_state.last_alert_time))
-           st.info(f"⏳ Cooldown active: {remaining}s remaining")
-    # ---------------- DECISION ---------------- #
-    st.markdown("## 🧠 Trading Decision")
+    # DECISION
+    st.markdown("## 🧠 Decision")
 
     if oil_price > 85 and delay > 20:
         st.error("🔥 STRONG BUY")
@@ -385,14 +231,3 @@ if gas is not None:
         st.success("💧 SELL")
     else:
         st.warning("⚖ HOLD")
-
-    # ALERTS
-    st.markdown("## 🔔 Market Alerts")
-
-    alerts = []
-
-    if oil_price > 90:
-        alerts.append("🚨 Oil spike")
-
-    if delay > 30:
-        alerts.append("🚨 Delay risk")
