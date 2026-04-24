@@ -45,17 +45,17 @@ st.sidebar.success(f"👤 {name}")
 def get_intraday_price(symbol="USO"):
     API_KEY = st.secrets["ALPHA_API_KEY"]
 
-    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=5min&apikey={API_KEY}"
+    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={API_KEY}"
 
     try:
         res = requests.get(url)
         data = res.json()
 
-        if "Time Series (5min)" not in data:
+        if "Time Series (Daily)" not in data:
             st.write("API RESPONSE:", data)
             return None
 
-        ts = data["Time Series (5min)"]
+        ts = data["Time Series (Daily)"]
 
         df = pd.DataFrame([
             {
