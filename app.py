@@ -44,7 +44,7 @@ st.sidebar.success(f"👤 {name}")
 # ---------------- FUNCTIONS ---------------- #
 
 def get_intraday_price(symbol="USO"):
-    API_KEY = os.getenv("ALPHA_API_KEY")
+    API_KEY = st.secrets["ALPHA_API_KEY"]
 
     url = f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=5min&apikey={API_KEY}"
 
