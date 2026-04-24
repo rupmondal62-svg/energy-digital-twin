@@ -169,11 +169,11 @@ elif page == "Trader Intelligence":
     ["Crude Oil (WTI)", "Brent Oil", "Natural Gas"]
     )
     if market == "Crude Oil (WTI)":
-        symbol = "CL1:NYMEX"
+        symbol = "WTI"
     elif market == "Brent Oil":
-        symbol = "BRN:ICE"
+        symbol = "BRENT"
     elif market == "Natural Gas":
-        symbol = "NG:NYMEX"
+        symbol = "NG"
 
     history = get_realtime_price(symbol)
 
