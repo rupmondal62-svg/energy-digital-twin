@@ -42,7 +42,6 @@ authenticator.logout("Logout", "sidebar")
 st.sidebar.success(f"👤 {name}")
 
 # ---------------- FUNCTIONS ---------------- #
-
 def get_intraday_price(symbol="USO"):
     API_KEY = st.secrets["ALPHA_API_KEY"]
 
@@ -51,6 +50,11 @@ def get_intraday_price(symbol="USO"):
     try:
         res = requests.get(url)
         data = res.json()
+
+        if "Time Series (5min)" not in data:
+            st.write("API RESPONSE:", data)
+            return None
+
         ts = data["Time Series (5min)"]
 
         df = pd.DataFrame([
@@ -67,9 +71,10 @@ def get_intraday_price(symbol="USO"):
         df["date"] = pd.to_datetime(df["date"])
         df = df.sort_values("date")
 
-        return df
+        return df   # ✅ INSIDE try (same indentation)
 
-    except:
+    except Exception as e:
+        st.write("ERROR:", e)
         return None
 
 
