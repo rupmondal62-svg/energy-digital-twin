@@ -72,41 +72,6 @@ authenticator.logout("Logout", "sidebar")
 st.sidebar.success(f"👤 {name}")
 
 # ---------------- FUNCTIONS ---------------- #
-def get_intraday_price(symbol="USO"):
-    API_KEY = st.secrets["ALPHA_API_KEY"]
-
-    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={API_KEY}"
-
-    try:
-        res = requests.get(url)
-        data = res.json()
-
-        if "Time Series (Daily)" not in data:
-            st.write("API RESPONSE:", data)
-            return None
-
-        ts = data["Time Series (Daily)"]
-
-        df = pd.DataFrame([
-            {
-                "date": k,
-                "open": float(v["1. open"]),
-                "high": float(v["2. high"]),
-                "low": float(v["3. low"]),
-                "close": float(v["4. close"])
-            }
-            for k, v in ts.items()
-        ])
-
-        df["date"] = pd.to_datetime(df["date"])
-        df = df.sort_values("date")
-
-        return df   # ✅ INSIDE try (same indentation)
-
-    except Exception as e:
-        st.write("ERROR:", e)
-        return None
-
 
 def get_oil_price():
     try:
