@@ -12,19 +12,6 @@ from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 from streamlit_autorefresh import st_autorefresh
 st.markdown("""
-<div style="
-    background: linear-gradient(135deg, #111827, #1f2937);
-    padding: 30px;
-    border-radius: 20px;
-    margin-bottom: 25px;
-">
-    <h1 style="margin:0;">⚡ EnerSight AI</h1>
-    <p style="color:#9CA3AF; font-size:16px;">
-        Real-time Energy Intelligence & Trading Platform
-    </p>
-</div>
-""", unsafe_allow_html=True)
-st.markdown("""
 <style>
 .card {
     background: linear-gradient(145deg, #1f2937, #111827);
@@ -238,11 +225,6 @@ elif page == "Trader Intelligence":
             AI-powered oil & gas signals
         </p>
     </div>
-    """, unsafe_allow_html=True)
-    # ✅ ADD HERO HEADER HERE
-    st.markdown("""
-    <h1 style='font-size:40px;'>📈 Trading Intelligence</h1>
-    <p style='color:gray;'>AI-powered oil & gas signals</p>
     """, unsafe_allow_html=True)
 
     st.markdown("## 📊 Market Signal")
