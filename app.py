@@ -82,21 +82,46 @@ st.markdown("""
 """, unsafe_allow_html=True)
 st.markdown("""
 <style>
+/* MAIN BACKGROUND */
+body {
+    background: #f5f7fb;
+}
+
+/* APP CONTAINER */
+[data-testid="stAppViewContainer"] {
+    background: #f5f7fb;
+}
+
+/* SIDEBAR */
+[data-testid="stSidebar"] {
+    background: #ffffff;
+}
+
+/* CARDS */
 .card {
-    background: linear-gradient(145deg, #1f2937, #111827);
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
     transition: 0.3s;
 }
+
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
-.metric {
-    font-size: 28px;
-    font-weight: bold;
-    color: #22C55E;
+
+/* HERO */
+.hero {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    padding: 40px;
+    border-radius: 20px;
+    color: white;
+}
+
+/* TEXT */
+h1, h2, h3 {
+    color: #111827;
 }
 </style>
 """, unsafe_allow_html=True)
