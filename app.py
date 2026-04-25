@@ -11,8 +11,60 @@ import plotly.graph_objects as go
 from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 from streamlit_autorefresh import st_autorefresh
+st.set_page_config(
+    page_title="EnerSight AI",
+    page_icon="🌍",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+st.markdown("""
+<style>
+body {
+    background-image: url("https://images.unsplash.com/photo-1581090700227-1e8a0f0a7c84");
+    background-size: cover;
+    background-attachment: fixed;
+}
 
+/* Optional overlay for readability */
+.main {
+    background-color: rgba(14,17,23,0.85);
+}
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
+/* Background */
+.main {
+    background-color: #0E1117;
+    color: white;
+}
 
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background-color: #111827;
+}
+
+/* Cards */
+.card {
+    background-color: #1F2937;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 20px rgba(0,0,0,0.4);
+}
+
+/* Headings */
+h1, h2, h3 {
+    color: #F9FAFB;
+}
+
+/* Metric glow */
+.metric {
+    font-size: 22px;
+    font-weight: bold;
+    color: #22C55E;
+}
+</style>
+""", unsafe_allow_html=True)
 # ================= REAL-TIME API FUNCTION ================= #
 
 def get_realtime_price(symbol="USO"):
@@ -134,6 +186,40 @@ st_autorefresh(interval=10000, key="refresh")
 
 # ---------------- DASHBOARD ---------------- #
 if page == "Dashboard":
+     # ✅ ADD HERO HEADER HERE
+    st.markdown("""
+    <h1 style='font-size:40px;'>⚡ EnerSight AI</h1>
+    <p style='color:gray;'>Real-time Energy Intelligence Platform</p>
+    """, unsafe_allow_html=True)
+
+    st.markdown("## 📊 Overview")
+
+    # ✅ 🔥 ADD INFOGRAPHICS HERE
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.markdown(f"""
+        <div class="card">
+            <h4>🚢 Ships</h4>
+            <p class="metric">{len(df)}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown("""
+        <div class="card">
+            <h4>⚠ Risk</h4>
+            <p>Medium</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col3:
+        st.markdown("""
+        <div class="card">
+            <h4>📡 Status</h4>
+            <p>LIVE</p>
+        </div>
+        """, unsafe_allow_html=True)
     col1, col2, col3 = st.columns(3)
     col1.metric("🚢 Ships", len(df))
     col2.metric("⚠ Risk", "Medium")
@@ -156,9 +242,24 @@ elif page == "Live Map":
 
 # ---------------- TRADER ---------------- #
 elif page == "Trader Intelligence":
+    # ✅ ADD HERO HEADER HERE
+    st.markdown("""
+    <h1 style='font-size:40px;'>📈 Trading Intelligence</h1>
+    <p style='color:gray;'>AI-powered oil & gas signals</p>
+    """, unsafe_allow_html=True)
+
+    st.markdown("## 📊 Market Signal")
 
     if user_role == "free":
-        st.warning("🔒 PRO Feature")
+        st.markdown("""
+        <div class="card">
+            <h2>🔒 Premium Feature</h2>
+            <p>Upgrade to Pro to access advanced trading intelligence, real-time signals, and AI predictions.</p>
+            <hr>
+            <p style="color:#22C55E; font-weight:bold;">🚀 Upgrade now to unlock full power</p>
+        </div>
+        """, unsafe_allow_html=True)
+
         st.stop()
 
     st.markdown("## 📊 Market Signal")
@@ -192,6 +293,12 @@ elif page == "Trader Intelligence":
         low=history['low'],
         close=history['close']
     )])
+    fig.update_layout(
+    template="plotly_dark",
+    xaxis_rangeslider_visible=False,
+    height=500,
+    margin=dict(l=10, r=10, t=30, b=10)
+)
 
     st.plotly_chart(fig, use_container_width=True)
 
