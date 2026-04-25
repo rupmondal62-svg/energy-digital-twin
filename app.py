@@ -13,6 +13,75 @@ import streamlit_authenticator as stauth
 from streamlit_autorefresh import st_autorefresh
 st.markdown("""
 <style>
+
+/* -------- BACKGROUND -------- */
+.stApp {
+    background: radial-gradient(circle at top left, #0f172a, #020617);
+    color: white;
+}
+
+/* -------- HERO -------- */
+.hero {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    padding: 40px;
+    border-radius: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* -------- GLASS CARDS -------- */
+.card {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: 0.3s;
+}
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+}
+
+/* -------- METRICS -------- */
+.metric {
+    font-size: 32px;
+    font-weight: bold;
+    background: linear-gradient(90deg, #22c55e, #4ade80);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* -------- GLOW TEXT -------- */
+.glow {
+    text-shadow: 0 0 10px rgba(34,197,94,0.6);
+}
+
+/* -------- SIDEBAR -------- */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #020617, #0f172a);
+}
+
+/* -------- ANIMATION -------- */
+@keyframes fadeIn {
+    from {opacity:0; transform: translateY(20px);}
+    to {opacity:1; transform: translateY(0);}
+}
+
+/* -------- SCROLLBAR -------- */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-thumb {
+    background: #22c55e;
+    border-radius: 10px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
 .card {
     background: linear-gradient(145deg, #1f2937, #111827);
     padding: 25px;
@@ -148,47 +217,46 @@ with st.sidebar:
 
 # ---------------- DASHBOARD ---------------- #
 if page == "Dashboard":
-     # ✅ ADD HERO HEADER HERE
+
+    # HERO
     st.markdown("""
-    <div style="
-        background: linear-gradient(135deg, #111827, #1f2937);
-        padding: 30px;
-        border-radius: 20px;
-        margin-bottom: 25px;
-    ">
-        <h1>⚡ EnerSight AI</h1>
-        <p style="color:#9CA3AF;">
-            Real-time Energy Intelligence Platform
+    <div class="hero">
+        <h1 class="glow">⚡ EnerSight AI</h1>
+        <p style="color:#94a3b8;">
+            Real-time Energy Intelligence & Trading Platform
         </p>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown("## 📊 Overview")
 
-    # ✅ 🔥 ADD INFOGRAPHICS HERE
+    # INFOGRAPHICS (✅ INSIDE IF)
     col1, col2, col3 = st.columns(3)
 
     with col1:
         st.markdown(f"""
         <div class="card">
-            <h4>🚢 Ships</h4>
+            <h4>🚢 Active Ships</h4>
             <p class="metric">{len(df)}</p>
+            <p style="color:#94a3b8;">Live tracking</p>
         </div>
         """, unsafe_allow_html=True)
 
     with col2:
         st.markdown("""
         <div class="card">
-            <h4>⚠ Risk</h4>
-            <p>Medium</p>
+            <h4>⚠ Risk Level</h4>
+            <p class="metric" style="color:#f59e0b;">Medium</p>
+            <p style="color:#94a3b8;">Supply tension</p>
         </div>
         """, unsafe_allow_html=True)
 
     with col3:
         st.markdown("""
         <div class="card">
-            <h4>📡 Status</h4>
-            <p>LIVE</p>
+            <h4>📡 System Status</h4>
+            <p class="metric">LIVE</p>
+            <p style="color:#94a3b8;">Streaming data</p>
         </div>
         """, unsafe_allow_html=True)
     col1, col2, col3 = st.columns(3)
@@ -214,18 +282,18 @@ elif page == "Live Map":
 # ---------------- TRADER ---------------- #
 elif page == "Trader Intelligence":
     st.markdown("""
-    <div style="
-        background: linear-gradient(135deg, #111827, #1f2937);
-        padding: 30px;
-        border-radius: 20px;
-        margin-bottom: 25px;
-    ">
-        <h1>📈 Trading Intelligence</h1>
-        <p style="color:#9CA3AF;">
-            AI-powered oil & gas signals
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+<div style="
+    background: linear-gradient(135deg, #111827, #1f2937);
+    padding: 30px;
+    border-radius: 20px;
+    margin-bottom: 25px;
+">
+    <h1>📈 Trading Intelligence</h1>
+    <p style="color:#9CA3AF;">
+        AI-powered oil & gas signals
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
     st.markdown("## 📊 Market Signal")
 
@@ -273,9 +341,12 @@ elif page == "Trader Intelligence":
     )])
     fig.update_layout(
     template="plotly_dark",
-    xaxis_rangeslider_visible=False,
-    height=500,
-    margin=dict(l=10, r=10, t=30, b=10)
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)",
+    font=dict(color="white"),
+    xaxis=dict(showgrid=False),
+    yaxis=dict(showgrid=False),
+    height=500
 )
 
     st.plotly_chart(fig, use_container_width=True)
@@ -342,12 +413,14 @@ elif page == "Trader Intelligence":
         st.session_state.last_alert_time = now
         st.success("📧 Alert Sent")
 
-    # ---------------- DECISION ---------------- #
-    st.markdown("## 🧠 Final Decision")
+# ---------------- DECISION ---------------- #
+st.markdown("## 🧠 Final Decision")
 
-    if signal == "BUY" and delay > 20:
-        st.error("🔥 STRONG BUY")
-    elif signal == "SELL":
-        st.success("💧 SELL")
-    else:
-        st.warning("⚖ WAIT")
+if signal == "BUY":
+    st.markdown('<div class="card">📈 <b style="color:#22c55e;">BUY SIGNAL</b></div>', unsafe_allow_html=True)
+
+elif signal == "SELL":
+    st.markdown('<div class="card">📉 <b style="color:#ef4444;">SELL SIGNAL</b></div>', unsafe_allow_html=True)
+
+else:
+    st.markdown('<div class="card">⚖ HOLD</div>', unsafe_allow_html=True)
