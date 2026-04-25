@@ -157,10 +157,6 @@ with st.sidebar:
     st.title("⚡ EnerSight AI")
     page = st.radio("", ["Dashboard", "Live Map", "Trader Intelligence"])
 
-# ---------------- HEADER ---------------- #
-st.markdown("# 🌍 EnerSight AI")
-st.markdown("### ⚡ Intelligence Platform")
-
 st_autorefresh(interval=10000, key="refresh")
 
 # ---------------- DASHBOARD ---------------- #
@@ -262,8 +258,6 @@ elif page == "Trader Intelligence":
         """, unsafe_allow_html=True)
 
         st.stop()
-
-    st.markdown("## 📊 Market Signal")
     st.markdown("### 🛢 Select Market")
 
     market = st.selectbox(
