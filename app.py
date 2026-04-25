@@ -259,10 +259,6 @@ if page == "Dashboard":
             <p style="color:#94a3b8;">Streaming data</p>
         </div>
         """, unsafe_allow_html=True)
-    col1, col2, col3 = st.columns(3)
-    col1.metric("🚢 Ships", len(df))
-    col2.metric("⚠ Risk", "Medium")
-    col3.metric("📡 Status", "LIVE")
 
 # ---------------- MAP ---------------- #
 elif page == "Live Map":
@@ -412,15 +408,15 @@ elif page == "Trader Intelligence":
         send_email_alert("\n".join(alerts))
         st.session_state.last_alert_time = now
         st.success("📧 Alert Sent")
+        # ---------------- DECISION ---------------- #
+    st.markdown("## 🧠 Final Decision")
 
-# ---------------- DECISION ---------------- #
-st.markdown("## 🧠 Final Decision")
+    if signal == "BUY":
+        st.markdown('<div class="card">📈 <b style="color:#22c55e;">BUY SIGNAL</b></div>', unsafe_allow_html=True)
 
-if signal == "BUY":
-    st.markdown('<div class="card">📈 <b style="color:#22c55e;">BUY SIGNAL</b></div>', unsafe_allow_html=True)
+    elif signal == "SELL":
+        st.markdown('<div class="card">📉 <b style="color:#ef4444;">SELL SIGNAL</b></div>', unsafe_allow_html=True)
 
-elif signal == "SELL":
-    st.markdown('<div class="card">📉 <b style="color:#ef4444;">SELL SIGNAL</b></div>', unsafe_allow_html=True)
+    else:
+        st.markdown('<div class="card">⚖ HOLD</div>', unsafe_allow_html=True)
 
-else:
-    st.markdown('<div class="card">⚖ HOLD</div>', unsafe_allow_html=True)
