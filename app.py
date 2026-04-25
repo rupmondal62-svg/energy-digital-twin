@@ -11,55 +11,34 @@ import plotly.graph_objects as go
 from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 from streamlit_autorefresh import st_autorefresh
-st.set_page_config(
-    page_title="EnerSight AI",
-    page_icon="🌍",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
 st.markdown("""
-<style>
-body {
-    background-image: url("https://images.unsplash.com/photo-1581090700227-1e8a0f0a7c84");
-    background-size: cover;
-    background-attachment: fixed;
-}
-
-/* Optional overlay for readability */
-.main {
-    background-color: rgba(14,17,23,0.85);
-}
-</style>
+<div style="
+    background: linear-gradient(135deg, #111827, #1f2937);
+    padding: 30px;
+    border-radius: 20px;
+    margin-bottom: 25px;
+">
+    <h1 style="margin:0;">⚡ EnerSight AI</h1>
+    <p style="color:#9CA3AF; font-size:16px;">
+        Real-time Energy Intelligence & Trading Platform
+    </p>
+</div>
 """, unsafe_allow_html=True)
 st.markdown("""
 <style>
-/* Background */
-.main {
-    background-color: #0E1117;
-    color: white;
-}
-
-/* Sidebar */
-[data-testid="stSidebar"] {
-    background-color: #111827;
-}
-
-/* Cards */
 .card {
-    background-color: #1F2937;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0px 4px 20px rgba(0,0,0,0.4);
+    background: linear-gradient(145deg, #1f2937, #111827);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    transition: 0.3s;
 }
-
-/* Headings */
-h1, h2, h3 {
-    color: #F9FAFB;
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.7);
 }
-
-/* Metric glow */
 .metric {
-    font-size: 22px;
+    font-size: 28px;
     font-weight: bold;
     color: #22C55E;
 }
@@ -188,8 +167,17 @@ st_autorefresh(interval=10000, key="refresh")
 if page == "Dashboard":
      # ✅ ADD HERO HEADER HERE
     st.markdown("""
-    <h1 style='font-size:40px;'>⚡ EnerSight AI</h1>
-    <p style='color:gray;'>Real-time Energy Intelligence Platform</p>
+    <div style="
+        background: linear-gradient(135deg, #111827, #1f2937);
+        padding: 30px;
+        border-radius: 20px;
+        margin-bottom: 25px;
+    ">
+        <h1>⚡ EnerSight AI</h1>
+        <p style="color:#9CA3AF;">
+            Real-time Energy Intelligence Platform
+        </p>
+    </div>
     """, unsafe_allow_html=True)
 
     st.markdown("## 📊 Overview")
@@ -242,6 +230,19 @@ elif page == "Live Map":
 
 # ---------------- TRADER ---------------- #
 elif page == "Trader Intelligence":
+    st.markdown("""
+    <div style="
+        background: linear-gradient(135deg, #111827, #1f2937);
+        padding: 30px;
+        border-radius: 20px;
+        margin-bottom: 25px;
+    ">
+        <h1>📈 Trading Intelligence</h1>
+        <p style="color:#9CA3AF;">
+            AI-powered oil & gas signals
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     # ✅ ADD HERO HEADER HERE
     st.markdown("""
     <h1 style='font-size:40px;'>📈 Trading Intelligence</h1>
