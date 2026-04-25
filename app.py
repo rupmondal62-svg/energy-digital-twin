@@ -156,10 +156,25 @@ user_role = "pro" if check_paid_user(username) else "free"
 with st.sidebar:
     st.title("⚡ EnerSight AI")
     page = st.radio("", ["Dashboard", "Live Map", "Trader Intelligence"])
+    st_autorefresh(interval=10000, key="refresh")
 
-st_autorefresh(interval=10000, key="refresh")
 
-
+# ---------------- DASHBOARD ---------------- #
+if page == "Dashboard":
+     # ✅ ADD HERO HEADER HERE
+    st.markdown("""
+    <div style="
+        background: linear-gradient(135deg, #111827, #1f2937);
+        padding: 30px;
+        border-radius: 20px;
+        margin-bottom: 25px;
+    ">
+        <h1>⚡ EnerSight AI</h1>
+        <p style="color:#9CA3AF;">
+            Real-time Energy Intelligence Platform
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("## 📊 Overview")
 
@@ -243,6 +258,7 @@ elif page == "Trader Intelligence":
         """, unsafe_allow_html=True)
 
         st.stop()
+
     st.markdown("### 🛢 Select Market")
 
     market = st.selectbox(
